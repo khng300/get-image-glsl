@@ -82,5 +82,24 @@ int main(int argc, char* argv[])
     readFile(fragContents, fragFilename);
     GLSLVersion version = getVersion(fragContents);
 
+    switch(version) {
+
+        // regular GLSL
+    case GLSLv100:
+    case GLSLv110:
+    case GLSLv440:
+        printf("TODO: init glfw\n");
+        break;
+
+        // GLSL ES
+    case GLSLv300:
+        printf("TODO: init egl\n");
+        break;
+
+    default:
+        // Should never happen
+        crash("No GLSL version? (%d)", version);
+    }
+
     exit(EXIT_SUCCESS);
 }
