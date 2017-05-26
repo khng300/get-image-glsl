@@ -15,7 +15,8 @@
 
 typedef enum {
     GLSLv100,
-    GLSLv300es,
+    GLSLv110,
+    GLSLv300,
     GLSLv440,
 } GLSLVersion;
 
@@ -42,6 +43,24 @@ void readFile(std::string& contents, const std::string& filename) {
 
 /*---------------------------------------------------------------------------*/
 
+GLSLVersion getVersion(const std::string& fragContents) {
+    size_t pos = fragContents.find('\n');
+    if (pos == std::string::npos) {
+        crash("%s", "cannot find end-of-line in fragment shader");
+    }
+    std::string sub = fragContents.substr(0, pos);
+    if (std::string::npos == sub.find("#version")) {
+        crash("%s", "cannot find ``#version'' in first line of fragment shader");
+    }
+    if (std::string::npos != sub.find("100")) { return GLSLv100; }
+    if (std::string::npos != sub.find("110")) { return GLSLv110; }
+    if (std::string::npos != sub.find("300")) { return GLSLv300; }
+    if (std::string::npos != sub.find("440")) { return GLSLv440; }
+    crash("Cannot find a supported GLSL version in first line of fragment shader: ``%.80s''", sub.c_str());
+}
+
+/*---------------------------------------------------------------------------*/
+
 int main(int argc, char* argv[])
 {
     std::string fragFilename;
@@ -61,6 +80,7 @@ int main(int argc, char* argv[])
 
     std::string fragContents;
     readFile(fragContents, fragFilename);
+    GLSLVersion version = getVersion(fragContents);
 
     exit(EXIT_SUCCESS);
 }
