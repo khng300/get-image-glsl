@@ -1,5 +1,8 @@
-#ifndef __COMMON__
-#define __COMMON__
+#ifndef __GETIMAGE_COMMON__
+#define __GETIMAGE_COMMON__
+
+#include <stdlib.h> // exit()
+#include <stdio.h>  // printf()
 
 #define crash(fmt, ...) do {                                            \
         printf("%s:%d (%s) ERROR: ", __FILE__, __LINE__, __func__);     \

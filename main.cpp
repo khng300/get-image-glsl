@@ -5,17 +5,21 @@
 #include <fstream>
 #include <sstream>
 
-#include <stdio.h>
-
 #include "common.h"
+#include "egl.h"
+
+#include "GLES/gl.h"
+#include "GLES2/gl2.h"
 
 /*---------------------------------------------------------------------------*/
 
 typedef enum {
+    // GLSL (regular)
     GLSLv100,
     GLSLv110,
-    GLSLv300,
     GLSLv440,
+    // GLSL ES
+    GLSLv300,
 } GLSLVersion;
 
 /*---------------------------------------------------------------------------*/
@@ -71,6 +75,11 @@ int main(int argc, char* argv[])
     readFile(fragContents, fragFilename);
     GLSLVersion version = getVersion(fragContents);
 
+    EGLDisplay display = 0;
+    EGLConfig config = 0;
+    EGLContext context = 0;
+    EGLSurface surface = 0;
+
     switch(version) {
 
         // regular GLSL
@@ -82,7 +91,7 @@ int main(int argc, char* argv[])
 
         // GLSL ES
     case GLSLv300:
-        printf("TODO: init egl\n");
+        egl_init(200, 300, display, config, context, surface);
         break;
 
     default:
