@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "egl.h"
+#include "glfw.h"
 
 #include "GLES/gl.h"
 #include "GLES2/gl2.h"
@@ -86,7 +87,7 @@ int main(int argc, char* argv[])
     case GLSLv100:
     case GLSLv110:
     case GLSLv440:
-        printf("TODO: init glfw\n");
+        glfw_init(20, 300);
         break;
 
         // GLSL ES

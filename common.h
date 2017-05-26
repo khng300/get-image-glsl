@@ -1,6 +1,8 @@
 #ifndef __GETIMAGE_COMMON__
 #define __GETIMAGE_COMMON__
 
+//#include "glad.h"
+
 #include <stdlib.h> // exit()
 #include <stdio.h>  // printf()
 
