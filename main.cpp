@@ -30,15 +30,14 @@ typedef enum {
 
 /*---------------------------------------------------------------------------*/
 
-void readFile(const std::string& fileName, std::string& contentsOut) {
-    std::ifstream ifs(fileName.c_str());
+void readFile(std::string& contents, const std::string& filename) {
+    std::ifstream ifs(filename.c_str());
     if(!ifs) {
-        crash("File not found: %s", fileName.c_str());
+        crash("File not found: %s", filename.c_str());
     }
     std::stringstream ss;
     ss << ifs.rdbuf();
-    contentsOut = ss.str();
-    return true;
+    contents = ss.str();
 }
 
 /*---------------------------------------------------------------------------*/
@@ -61,7 +60,7 @@ int main(int argc, char* argv[])
     }
 
     std::string fragContents;
-    re
+    readFile(fragContents, fragFilename);
 
     exit(EXIT_SUCCESS);
 }
