@@ -4,5 +4,5 @@ LDFLAGS=-lglfw -ldl
 
 all: get_image
 
-get_image: main.cpp
+get_image: main.cpp common.h
 	$(CXX) -o $@ $(INCLUDE) $(LDFLAGS) $?
