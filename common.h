@@ -18,10 +18,7 @@ typedef struct {
     ContextProvider contextProvider;
 } Params;
 
-Params DEFAULT_PARAMS = {
-width: 256,
-height: 256
-};
+extern const Params DEFAULT_PARAMS;
 
 /*---------------------------------------------------------------------------*/
 
