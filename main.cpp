@@ -1,9 +1,5 @@
 // TODO: decide of a clang-format
 
-// Design choices: for any error, use the crash() macro. Do not hesitate
-// to crash as soon as something goes wrong, rather than passing around
-// return values.
-
 #include <string>
 #include <iostream>
 #include <fstream>
