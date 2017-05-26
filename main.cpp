@@ -57,6 +57,8 @@ GLSLVersion getVersion(const std::string& fragContents) {
 
 int main(int argc, char* argv[])
 {
+    Params params = DEFAULT_PARAMS;
+
     std::string fragFilename;
 
     // parse args
@@ -87,12 +89,14 @@ int main(int argc, char* argv[])
     case GLSLv100:
     case GLSLv110:
     case GLSLv440:
-        glfw_init(20, 300);
+        glfw_init(params.width, params.height);
+        params.contextProvider = Ctx_GLFW;
         break;
 
         // GLSL ES
     case GLSLv300:
-        egl_init(200, 300, display, config, context, surface);
+        egl_init(params.width, params.height, display, config, context, surface);
+        params.contextProvider = Ctx_EGL;
         break;
 
     default:
