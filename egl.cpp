@@ -1,7 +1,12 @@
 #include "common.h"
 #include "egl.h"
 
-void egl_init(int width, int height, EGLDisplay& display, EGLConfig& config, EGLContext& context, EGLSurface& surface) {
+void egl_init(int width, int height, AbstractEGL& abt) {
+
+    EGLDisplay& display = abt.display;
+    EGLConfig& config = abt.config;
+    EGLContext& context = abt.context;
+    EGLSurface& surface = abt.surface;
 
     const EGLint config_attribute_list[] =
         {

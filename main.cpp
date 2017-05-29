@@ -87,10 +87,7 @@ int main(int argc, char* argv[])
     readFile(fragContents, fragFilename);
     GLSLVersion version = getVersion(fragContents);
 
-    EGLDisplay display = 0;
-    EGLConfig config = 0;
-    EGLContext context = 0;
-    EGLSurface surface = 0;
+    AbstractEGL AbtEGL;
 
     switch(version) {
 
@@ -104,7 +101,7 @@ int main(int argc, char* argv[])
 
         // GLSL ES
     case GLSLv300:
-        egl_init(params.width, params.height, display, config, context, surface);
+        egl_init(params.width, params.height, AbtEGL);
         params.contextProvider = Ctx_EGL;
         break;
 

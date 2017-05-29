@@ -18,6 +18,7 @@ typedef struct {
     ContextProvider contextProvider;
 } Params;
 
+// Defined in main.cpp
 extern const Params DEFAULT_PARAMS;
 
 /*---------------------------------------------------------------------------*/
