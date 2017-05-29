@@ -6,6 +6,8 @@
 #include <sstream>
 
 #include "common.h"
+// TODO: rename egl.h to getimage_egl.h, etc, to avoid confusion (as EGL
+// provides ELG/egl.h)
 #include "egl.h"
 #include "glfw.h"
 
