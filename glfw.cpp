@@ -6,7 +6,7 @@ static void errorCallback(int error, const char* description) {
 
 /*---------------------------------------------------------------------------*/
 
-void glfw_init(Params params) {
+void glfw_init(const Params& params, AbstractGLFW& abt) {
 
     glfwSetErrorCallback(errorCallback);
 
@@ -38,5 +38,16 @@ void glfw_init(Params params) {
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
+    abt.window = window;
+
     return;
 }
+
+/*---------------------------------------------------------------------------*/
+
+void glfw_render(AbstractGLFW& abt) {
+    glfwSwapBuffers(abt.window);
+    glfwPollEvents();
+}
+
+/*---------------------------------------------------------------------------*/

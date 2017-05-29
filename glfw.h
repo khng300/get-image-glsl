@@ -5,6 +5,12 @@
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
-void glfw_init(Params params);
+typedef struct {
+    GLFWwindow* window;
+} AbstractGLFW;
+
+void glfw_init(const Params& params, AbstractGLFW& abt);
+
+void glfw_render(AbstractGLFW& abt);
 
 #endif
