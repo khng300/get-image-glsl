@@ -1,7 +1,6 @@
-#include "common.h"
 #include "egl.h"
 
-void egl_init(int width, int height, AbstractEGL& abt) {
+void egl_init(const Params& params, AbstractEGL& abt) {
 
     EGLDisplay& display = abt.display;
     EGLConfig& config = abt.config;
@@ -30,8 +29,8 @@ void egl_init(int width, int height, AbstractEGL& abt) {
 
     const EGLint pbuffer_attrib_list[] =
         {
-            EGL_WIDTH, width,
-            EGL_HEIGHT, height,
+            EGL_WIDTH, params.width,
+            EGL_HEIGHT, params.height,
             EGL_TEXTURE_FORMAT,  EGL_NO_TEXTURE,
             EGL_TEXTURE_TARGET, EGL_NO_TEXTURE,
             EGL_LARGEST_PBUFFER, EGL_TRUE,

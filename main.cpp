@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 
         // GLSL ES
     case GLSLv300:
-        egl_init(params.width, params.height, AbtEGL);
+        egl_init(params, AbtEGL);
         params.contextProvider = Ctx_EGL;
         break;
 
