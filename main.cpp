@@ -23,17 +23,6 @@ height: 256
 
 /*---------------------------------------------------------------------------*/
 
-typedef enum {
-    // GLSL (regular)
-    GLSLv100,
-    GLSLv110,
-    GLSLv440,
-    // GLSL ES
-    GLSLv300,
-} GLSLVersion;
-
-/*---------------------------------------------------------------------------*/
-
 void readFile(std::string& contents, const std::string& filename) {
     std::ifstream ifs(filename.c_str());
     if(!ifs) {
@@ -57,10 +46,14 @@ GLSLVersion getVersion(const std::string& fragContents) {
     }
     if (std::string::npos != sub.find("100")) { return GLSLv100; }
     if (std::string::npos != sub.find("110")) { return GLSLv110; }
-    if (std::string::npos != sub.find("300")) { return GLSLv300; }
+    if (std::string::npos != sub.find("300")) { return GLSLv300es; }
     if (std::string::npos != sub.find("440")) { return GLSLv440; }
     crash("Cannot find a supported GLSL version in first line of fragment shader: ``%.80s''", sub.c_str());
 }
+
+/*---------------------------------------------------------------------------*/
+
+
 
 /*---------------------------------------------------------------------------*/
 
@@ -85,30 +78,32 @@ int main(int argc, char* argv[])
 
     std::string fragContents;
     readFile(fragContents, fragFilename);
-    GLSLVersion version = getVersion(fragContents);
+    params.version = getVersion(fragContents);
 
     AbstractEGL AbtEGL;
 
-    switch(version) {
+    switch(params.version) {
 
         // regular GLSL
-    case GLSLv100:
     case GLSLv110:
     case GLSLv440:
-        glfw_init(params.width, params.height);
+        glfw_init(params);
         params.contextProvider = Ctx_GLFW;
         break;
 
         // GLSL ES
-    case GLSLv300:
+    case GLSLv100:
+    case GLSLv300es:
         egl_init(params, AbtEGL);
         params.contextProvider = Ctx_EGL;
         break;
 
     default:
         // Should never happen
-        crash("No GLSL version? (%d)", version);
+        crash("No GLSL version? (%d)", params.version);
     }
+
+
 
     exit(EXIT_SUCCESS);
 }

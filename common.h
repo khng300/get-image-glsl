@@ -12,10 +12,24 @@ typedef enum {
     Ctx_GLFW,
 } ContextProvider;
 
+/*---------------------------------------------------------------------------*/
+
+typedef enum {
+    // GLSL (regular)
+    GLSLv110,
+    GLSLv440,
+    // GLSL ES
+    GLSLv100,
+    GLSLv300es,
+} GLSLVersion;
+
+/*---------------------------------------------------------------------------*/
+
 typedef struct {
     int width;
     int height;
     ContextProvider contextProvider;
+    GLSLVersion version;
 } Params;
 
 // Defined in main.cpp
