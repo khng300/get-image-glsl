@@ -104,13 +104,11 @@ int getVersion(const std::string& fragContents) {
     }
 
     // TODO: use sscanf of c++ equivalent
-    if (std::string::npos != sub.find("100")) { return 100; }
     if (std::string::npos != sub.find("110")) { return 110; }
     if (std::string::npos != sub.find("120")) { return 120; }
     if (std::string::npos != sub.find("130")) { return 130; }
     if (std::string::npos != sub.find("140")) { return 140; }
     if (std::string::npos != sub.find("150")) { return 150; }
-    if (std::string::npos != sub.find("300")) { return 300; }
     if (std::string::npos != sub.find("330")) { return 330; }
     if (std::string::npos != sub.find("400")) { return 400; }
     if (std::string::npos != sub.find("410")) { return 410; }
@@ -118,6 +116,9 @@ int getVersion(const std::string& fragContents) {
     if (std::string::npos != sub.find("430")) { return 430; }
     if (std::string::npos != sub.find("440")) { return 440; }
     if (std::string::npos != sub.find("450")) { return 450; }
+    // The following are OpenGL ES
+    if (std::string::npos != sub.find("100")) { return 100; }
+    if (std::string::npos != sub.find("300")) { return 300; }
     crash("Cannot find a supported GLSL version in first line of fragment shader: ``%.80s''", sub.c_str());
 }
 
@@ -131,9 +132,22 @@ void generateVertexShader(std::string& out, const Params& params) {
         "}\n"
         );
 
+    static const std::string vertVersion300Contents = std::string(
+        "in vec3 aVertexPosition;\n"
+        "void main(void) {\n"
+        "    gl_Position = vec4(aVertexPosition, 1.0);\n"
+        "}\n"
+        );
+
     std::stringstream ss;
-    ss << "#version " << params.version << std::endl;
-    ss << vertGenericContents;
+    ss << "#version " << params.version;
+    if (params.version == 300) {
+        ss << " es" << std::endl;
+        ss << vertVersion300Contents;
+    } else {
+        ss << std::endl;
+        ss << vertGenericContents;
+    }
     out = ss.str();
 }
 
