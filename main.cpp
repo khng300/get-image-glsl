@@ -162,28 +162,6 @@ int main(int argc, char* argv[])
 
     context_init(params, context);
 
-    // // Init context depepding on version
-    // switch(params.version) {
-
-    //     // regular GLSL
-    // case GLSLv110:
-    // case GLSLv440:
-    //     glfw_init(params, AbtGLFW);
-    //     params.contextProvider = Ctx_GLFW;
-    //     break;
-
-    //     // GLSL ES
-    // case GLSLv100:
-    // case GLSLv300es:
-    //     egl_init(params, AbtEGL);
-    //     params.contextProvider = Ctx_EGL;
-    //     break;
-
-    // default:
-    //     // Should never happen
-    //     crash("No GLSL version? (%d)", params.version);
-    // }
-
     // OpenGL part
     GLuint program = glCreateProgram();
     if (program == 0) {
@@ -265,31 +243,9 @@ int main(int argc, char* argv[])
 
     context_render(context);
 
-    // switch (params.contextProvider) {
-    // case Ctx_GLFW:
-    //     glfw_render(AbtGLFW);
-    //     break;
-    // case Ctx_EGL:
-    //     egl_render(AbtEGL);
-    //     break;
-    // default:
-    //     crash("Invalid context provider: %d", params.contextProvider);
-    // }
-
     savePNG(params);
 
     context_terminate(context);
-
-    // switch (params.contextProvider) {
-    // case Ctx_GLFW:
-    //     glfw_terminate(AbtGLFW);
-    //     break;
-    // case Ctx_EGL:
-    //     egl_terminate(AbtEGL);
-    //     break;
-    // default:
-    //     crash("Invalid context provider: %d", params.contextProvider);
-    // }
 
     // ==============================
 
