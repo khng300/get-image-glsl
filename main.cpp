@@ -23,6 +23,7 @@
 static void defaultParams(Params& params) {
     params.width = 256;
     params.height = 256;
+    params.version = 0;
     params.output = "output.png";
 }
 
