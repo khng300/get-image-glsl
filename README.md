@@ -7,6 +7,8 @@ of GLSL, including GLSL ES.
 
  - add JSON support
 
+ - use cmake
+
 # Developper notes / design choices
 
 For any error, use the crash() macro defined in `common.h`. Do not
