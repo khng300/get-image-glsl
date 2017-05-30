@@ -5,7 +5,7 @@ of GLSL, including GLSL ES.
 
 # TODO
 
- - separate at compilation time.
+ - add JSON support
 
 # Developper notes / design choices
 
