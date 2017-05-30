@@ -135,6 +135,8 @@ void generateVertexShader(std::string& out, const Params& params) {
     std::stringstream ss;
     ss << "#version " << params.version;
     if (params.version == 300) {
+        // Version 300 must have the "es" suffix, and qualifies the
+        // _GLF_vertexPosition as "in" rather than "attribute"
         ss << " es" << std::endl << "in ";
     } else {
         ss << std::endl << "attribute ";
