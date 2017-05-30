@@ -1,13 +1,13 @@
-#include "egl.h"
+#include "context_egl.h"
 
 /*---------------------------------------------------------------------------*/
 
-void egl_init(const Params& params, AbstractEGL& abt) {
+void context_init(const Params& params, Context& ctx) {
 
-    EGLDisplay& display = abt.display;
-    EGLConfig& config = abt.config;
-    EGLContext& context = abt.context;
-    EGLSurface& surface = abt.surface;
+    EGLDisplay& display = ctx.display;
+    EGLConfig& config = ctx.config;
+    EGLContext& context = ctx.context;
+    EGLSurface& surface = ctx.surface;
 
     const EGLint config_attribute_list[] =
         {
@@ -72,14 +72,14 @@ void egl_init(const Params& params, AbstractEGL& abt) {
 
 /*---------------------------------------------------------------------------*/
 
-void egl_render(AbstractEGL& abt) {
-    eglSwapBuffers(abt.display, abt.surface);
+void context_render(Context& ctx) {
+    eglSwapBuffers(ctx.display, ctx.surface);
 }
 
 /*---------------------------------------------------------------------------*/
 
-void egl_terminate(AbstractEGL& abt) {
-    eglTerminate(abt.display);
+void context_terminate(Context& ctx) {
+    eglTerminate(ctx.display);
 }
 
 /*---------------------------------------------------------------------------*/

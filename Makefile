@@ -1,22 +1,32 @@
 CXX=g++
 CFLAGS=-g
-INCLUDE=-I. -I include
-LDFLAGS=-lglfw -ldl -lEGL
 
-all: get_image
+EGL_INCLUDE=-I.
+EGL_LDFLAGS=-lEGL -lGLESv2
 
-get_image: main.cpp common.h egl.o glfw.o glad.o lodepng.o
-	$(CXX) $(CFLAGS) -o $@ $(INCLUDE) $(LDFLAGS) $+
+GLFW_INCLUDE=-I. -I include
+GLFW_LDFLAGS=-lglfw -ldl
 
-egl.o: egl.cpp egl.h
-	$(CXX) $(CFLAGS) -c $(INCLUDE) $?
+all: get_image_egl get_image_glfw
 
-glfw.o: glfw.cpp glfw.h glad.c
-	$(CXX) $(CFLAGS) -c $(INCLUDE) $?
+# EGL
+get_image_egl: main.cpp common.h lodepng.o context_egl.o
+	$(CXX) $(CFLAGS) -DGETIMAGE_CONTEXT_EGL -o $@ $(EGL_INCLUDE) $(EGL_LDFLAGS) $+
+
+context_egl.o: context_egl.cpp context_egl.h
+	$(CXX) $(CFLAGS) -c $(EGL_INCLUDE) $?
+
+# GLFW
+get_image_glfw: main.cpp common.h lodepng.o context_glfw.o glad.o
+	$(CXX) $(CFLAGS) -DGETIMAGE_CONTEXT_GLFW -o $@ $(GLFW_INCLUDE) $(GLFW_LDFLAGS) $+
+
+context_glfw.o: context_glfw.cpp context_glfw.h
+	$(CXX) $(CFLAGS) -c $(GLFW_INCLUDE) $?
 
 glad.o: glad.c
-	$(CXX) $(CFLAGS) -c $(INCLUDE) $?
+	$(CXX) $(CFLAGS) -c $(GLFW_INCLUDE) $?
 
+# PNG library
 lodepng.o: lodepng.cpp
 	$(CXX) $(CFLAGS) -c $(INCLUDE) $?
 

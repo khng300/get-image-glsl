@@ -1,4 +1,4 @@
-#include "glfw.h"
+#include "context_glfw.h"
 
 static void errorCallback(int error, const char* description) {
     crash("GLFW Error %d: %s", error, description);
@@ -6,7 +6,7 @@ static void errorCallback(int error, const char* description) {
 
 /*---------------------------------------------------------------------------*/
 
-void glfw_init(const Params& params, AbstractGLFW& abt) {
+void context_init(const Params& params, Context& ctx) {
 
     glfwSetErrorCallback(errorCallback);
 
@@ -38,20 +38,20 @@ void glfw_init(const Params& params, AbstractGLFW& abt) {
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
-    abt.window = window;
+    ctx.window = window;
 }
 
 /*---------------------------------------------------------------------------*/
 
-void glfw_render(AbstractGLFW& abt) {
-    glfwSwapBuffers(abt.window);
+void context_render(Context& ctx) {
+    glfwSwapBuffers(ctx.window);
     glfwPollEvents();
 }
 
 /*---------------------------------------------------------------------------*/
 
-void glfw_terminate(AbstractGLFW& abt) {
-    glfwDestroyWindow(abt.window);
+void context_terminate(Context& ctx) {
+    glfwDestroyWindow(ctx.window);
     glfwTerminate();
 }
 

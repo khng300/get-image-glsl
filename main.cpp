@@ -5,16 +5,16 @@
 #include <sstream>
 #include <vector>
 
+#if   defined GETIMAGE_CONTEXT_EGL
+#include "context_egl.h"
+#elif defined GETIMAGE_CONTEXT_GLFW
+#include "context_glfw.h"
+#else
+#error Must define a context preprocessor macro!
+#endif
+
 #include "common.h"
-// TODO: rename egl.h to getimage_egl.h, etc, to avoid confusion (as EGL
-// provides ELG/egl.h)
-#include "egl.h"
-#include "glfw.h"
-
 #include "lodepng.h"
-
-#include "GLES/gl.h"
-#include "GLES2/gl2.h"
 
 #define CHANNELS (4)
 
@@ -141,9 +141,7 @@ int main(int argc, char* argv[])
 {
     std::string fragFilename;
     std::string fragContents;
-    AbstractEGL AbtEGL;
-    AbstractGLFW AbtGLFW;
-
+    Context context;
     Params params;
     defaultParams(params);
 
@@ -163,27 +161,29 @@ int main(int argc, char* argv[])
     readFile(fragContents, fragFilename);
     params.version = getVersion(fragContents);
 
-    // Init context depepding on version
-    switch(params.version) {
+    context_init(params, context);
 
-        // regular GLSL
-    case GLSLv110:
-    case GLSLv440:
-        glfw_init(params, AbtGLFW);
-        params.contextProvider = Ctx_GLFW;
-        break;
+    // // Init context depepding on version
+    // switch(params.version) {
 
-        // GLSL ES
-    case GLSLv100:
-    case GLSLv300es:
-        egl_init(params, AbtEGL);
-        params.contextProvider = Ctx_EGL;
-        break;
+    //     // regular GLSL
+    // case GLSLv110:
+    // case GLSLv440:
+    //     glfw_init(params, AbtGLFW);
+    //     params.contextProvider = Ctx_GLFW;
+    //     break;
 
-    default:
-        // Should never happen
-        crash("No GLSL version? (%d)", params.version);
-    }
+    //     // GLSL ES
+    // case GLSLv100:
+    // case GLSLv300es:
+    //     egl_init(params, AbtEGL);
+    //     params.contextProvider = Ctx_EGL;
+    //     break;
+
+    // default:
+    //     // Should never happen
+    //     crash("No GLSL version? (%d)", params.version);
+    // }
 
     // OpenGL part
     GLuint program = glCreateProgram();
@@ -259,29 +259,33 @@ int main(int argc, char* argv[])
 
     GL_SAFECALL(glFlush);
 
-    switch (params.contextProvider) {
-    case Ctx_GLFW:
-        glfw_render(AbtGLFW);
-        break;
-    case Ctx_EGL:
-        egl_render(AbtEGL);
-        break;
-    default:
-        crash("Invalid context provider: %d", params.contextProvider);
-    }
+    context_render(context);
+
+    // switch (params.contextProvider) {
+    // case Ctx_GLFW:
+    //     glfw_render(AbtGLFW);
+    //     break;
+    // case Ctx_EGL:
+    //     egl_render(AbtEGL);
+    //     break;
+    // default:
+    //     crash("Invalid context provider: %d", params.contextProvider);
+    // }
 
     savePNG(params);
 
-    switch (params.contextProvider) {
-    case Ctx_GLFW:
-        glfw_terminate(AbtGLFW);
-        break;
-    case Ctx_EGL:
-        egl_terminate(AbtEGL);
-        break;
-    default:
-        crash("Invalid context provider: %d", params.contextProvider);
-    }
+    context_terminate(context);
+
+    // switch (params.contextProvider) {
+    // case Ctx_GLFW:
+    //     glfw_terminate(AbtGLFW);
+    //     break;
+    // case Ctx_EGL:
+    //     egl_terminate(AbtEGL);
+    //     break;
+    // default:
+    //     crash("Invalid context provider: %d", params.contextProvider);
+    // }
 
     // ==============================
 
