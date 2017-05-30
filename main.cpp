@@ -103,8 +103,18 @@ int getVersion(const std::string& fragContents) {
     }
     if (std::string::npos != sub.find("100")) { return 100; }
     if (std::string::npos != sub.find("110")) { return 110; }
+    if (std::string::npos != sub.find("120")) { return 120; }
+    if (std::string::npos != sub.find("130")) { return 130; }
+    if (std::string::npos != sub.find("140")) { return 140; }
+    if (std::string::npos != sub.find("150")) { return 150; }
     if (std::string::npos != sub.find("300")) { return 300; }
-    if (std::string::npos != sub.find("440")) { return 400; }
+    if (std::string::npos != sub.find("330")) { return 330; }
+    if (std::string::npos != sub.find("400")) { return 400; }
+    if (std::string::npos != sub.find("410")) { return 410; }
+    if (std::string::npos != sub.find("420")) { return 420; }
+    if (std::string::npos != sub.find("430")) { return 430; }
+    if (std::string::npos != sub.find("440")) { return 440; }
+    if (std::string::npos != sub.find("450")) { return 450; }
     crash("Cannot find a supported GLSL version in first line of fragment shader: ``%.80s''", sub.c_str());
 }
 
