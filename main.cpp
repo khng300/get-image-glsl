@@ -32,7 +32,7 @@ static void defaultParams(Params& params) {
         func(__VA_ARGS__);                              \
         GLenum __err = glGetError();                    \
         if (__err != GL_NO_ERROR) {                     \
-            crash("OpenGL failure on: %s()" , #func); \
+            crash("OpenGL failure on: %s()" , #func);   \
         }                                               \
     } while (0)
 
@@ -92,7 +92,7 @@ void printProgramError(GLuint program) {
 
 /*---------------------------------------------------------------------------*/
 
-GLSLVersion getVersion(const std::string& fragContents) {
+int getVersion(const std::string& fragContents) {
     size_t pos = fragContents.find('\n');
     if (pos == std::string::npos) {
         crash("cannot find end-of-line in fragment shader");
@@ -101,21 +101,20 @@ GLSLVersion getVersion(const std::string& fragContents) {
     if (std::string::npos == sub.find("#version")) {
         crash("cannot find ``#version'' in first line of fragment shader");
     }
-    if (std::string::npos != sub.find("100")) { return GLSLv100; }
-    if (std::string::npos != sub.find("110")) { return GLSLv110; }
-    if (std::string::npos != sub.find("300")) { return GLSLv300es; }
-    if (std::string::npos != sub.find("440")) { return GLSLv440; }
+    if (std::string::npos != sub.find("100")) { return 100; }
+    if (std::string::npos != sub.find("110")) { return 110; }
+    if (std::string::npos != sub.find("300")) { return 300; }
+    if (std::string::npos != sub.find("440")) { return 400; }
     crash("Cannot find a supported GLSL version in first line of fragment shader: ``%.80s''", sub.c_str());
 }
 
 /*---------------------------------------------------------------------------*/
 
-const char* vtxstr =
-"#version 110\n"
+const std::string vertGenericContents = std::string(
 "attribute vec2 vert2d;\n"
 "void main(void) {\n"
 "  gl_Position = vec4(vert2d, 0.0, 1.0);\n"
-"}\n";
+"}\n");
 
 /*---------------------------------------------------------------------------*/
 
@@ -207,7 +206,12 @@ int main(int argc, char* argv[])
     GL_SAFECALL(glAttachShader, program, fragmentShader);
 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    GL_SAFECALL(glShaderSource, vertexShader, 1, &vtxstr, NULL);
+    std::stringstream ss;
+    ss << "#version " << params.version << std::endl;
+    ss << vertGenericContents;
+    std::string vertContents = ss.str();
+    temp = vertContents.c_str();
+    GL_SAFECALL(glShaderSource, vertexShader, 1, &temp, NULL);
     GL_SAFECALL(glCompileShader, vertexShader);
     GL_SAFECALL(glGetShaderiv, vertexShader, GL_COMPILE_STATUS, &status);
     if (!status) {

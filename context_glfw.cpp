@@ -17,18 +17,21 @@ void context_init(const Params& params, Context& ctx) {
     // TODO: here, try OpenGL ES API
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 
-    switch (params.version) {
-    case GLSLv110:
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-        break;
-    case GLSLv440:
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-        break;
-    default:
-        crash("Invalid GLSL version: %d", params.version);
-    }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, params.version / 100);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, (params.version % 100) / 10);
+
+    // switch (params.version) {
+    // case GLSLv110:
+    //     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+    //     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    //     break;
+    // case GLSLv440:
+    //     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    //     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+    //     break;
+    // default:
+    //     crash("Invalid GLSL version: %d", params.version);
+    // }
 
     GLFWwindow* window = glfwCreateWindow(params.width, params.height, "Get image", NULL, NULL);
     if (window == NULL) {

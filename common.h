@@ -15,7 +15,7 @@ typedef enum {
 } ContextProvider;
 
 /*---------------------------------------------------------------------------*/
-
+/*
 typedef enum {
     // GLSL (regular)
     GLSLv110,
@@ -24,14 +24,14 @@ typedef enum {
     GLSLv100,
     GLSLv300es,
 } GLSLVersion;
-
+*/
 /*---------------------------------------------------------------------------*/
 
 typedef struct {
     int width;
     int height;
     ContextProvider contextProvider;
-    GLSLVersion version;
+    int version;
     std::string output;
 } Params;
 
