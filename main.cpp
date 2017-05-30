@@ -102,6 +102,8 @@ int getVersion(const std::string& fragContents) {
     if (std::string::npos == sub.find("#version")) {
         crash("cannot find ``#version'' in first line of fragment shader");
     }
+
+    // TODO: use sscanf of c++ equivalent
     if (std::string::npos != sub.find("100")) { return 100; }
     if (std::string::npos != sub.find("110")) { return 110; }
     if (std::string::npos != sub.find("120")) { return 120; }
@@ -121,11 +123,19 @@ int getVersion(const std::string& fragContents) {
 
 /*---------------------------------------------------------------------------*/
 
-const std::string vertGenericContents = std::string(
-"attribute vec2 vert2d;\n"
-"void main(void) {\n"
-"  gl_Position = vec4(vert2d, 0.0, 1.0);\n"
-"}\n");
+void generateVertexShader(std::string& out, const Params& params) {
+    static const std::string vertGenericContents = std::string(
+        "attribute vec2 vert2d;\n"
+        "void main(void) {\n"
+        "    gl_Position = vec4(vert2d, 0.0, 1.0);\n"
+        "}\n"
+        );
+
+    std::stringstream ss;
+    ss << "#version " << params.version << std::endl;
+    ss << vertGenericContents;
+    out = ss.str();
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -195,10 +205,8 @@ int main(int argc, char* argv[])
     GL_SAFECALL(glAttachShader, program, fragmentShader);
 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    std::stringstream ss;
-    ss << "#version " << params.version << std::endl;
-    ss << vertGenericContents;
-    std::string vertContents = ss.str();
+    std::string vertContents;
+    generateVertexShader(vertContents, params);
     temp = vertContents.c_str();
     GL_SAFECALL(glShaderSource, vertexShader, 1, &temp, NULL);
     GL_SAFECALL(glCompileShader, vertexShader);
