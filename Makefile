@@ -4,7 +4,7 @@ LDFLAGS=-lglfw -ldl -lEGL
 
 all: get_image
 
-get_image: main.cpp common.h egl.o glfw.o glad.o
+get_image: main.cpp common.h egl.o glfw.o glad.o lodepng.o
 	$(CXX) -o $@ $(INCLUDE) $(LDFLAGS) $+
 
 egl.o: egl.cpp egl.h
@@ -14,6 +14,9 @@ glfw.o: glfw.cpp glfw.h glad.c
 	$(CXX) -c $(INCLUDE) $?
 
 glad.o: glad.c
+	$(CXX) -c $(INCLUDE) $?
+
+lodepng.o: lodepng.cpp
 	$(CXX) -c $(INCLUDE) $?
 
 PHONY: clean

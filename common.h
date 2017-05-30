@@ -4,6 +4,8 @@
 #include <stdlib.h> // exit()
 #include <stdio.h>  // printf()
 
+#include <string>
+
 /*---------------------------------------------------------------------------*/
 // Parameters
 
@@ -30,10 +32,8 @@ typedef struct {
     int height;
     ContextProvider contextProvider;
     GLSLVersion version;
+    std::string output;
 } Params;
-
-// Defined in main.cpp
-extern const Params DEFAULT_PARAMS;
 
 /*---------------------------------------------------------------------------*/
 

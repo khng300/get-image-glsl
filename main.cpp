@@ -1,6 +1,5 @@
 // TODO: decide of a clang-format
 
-#include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -12,8 +11,20 @@
 #include "egl.h"
 #include "glfw.h"
 
+#include "lodepng.h"
+
 #include "GLES/gl.h"
 #include "GLES2/gl2.h"
+
+#define CHANNELS (4)
+
+/*---------------------------------------------------------------------------*/
+
+static void defaultParams(Params& params) {
+    params.width = 256;
+    params.height = 256;
+    params.output = "output.png";
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -24,13 +35,6 @@
             crash("OpenGL failure on: %s()" , #func); \
         }                                               \
     } while (0)
-
-/*---------------------------------------------------------------------------*/
-
-const Params DEFAULT_PARAMS = {
-width: 256,
-height: 256
-};
 
 /*---------------------------------------------------------------------------*/
 
@@ -115,19 +119,33 @@ const char* vtxstr =
 
 /*---------------------------------------------------------------------------*/
 
-void savePNG(Params params) {
-
+void savePNG(Params& params) {
+    unsigned int uwidth = (unsigned int) params.width;
+    unsigned int uheight = (unsigned int) params.height;
+    std::vector<std::uint8_t> data(uwidth * uheight * CHANNELS);
+    GL_SAFECALL(glReadPixels, 0, 0, uwidth, uheight, GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
+    std::vector<std::uint8_t> flipped_data(uwidth * uheight * CHANNELS);
+    for (unsigned int h = 0; h < uheight ; h++)
+        for (unsigned int col = 0; col < uwidth * CHANNELS; col++)
+            flipped_data[h * uwidth * CHANNELS + col] =
+                data[(uheight - h - 1) * uwidth * CHANNELS + col];
+    unsigned png_error = lodepng::encode(params.output, flipped_data, uwidth, uheight);
+    if (png_error) {
+        crash("lodepng: %s", lodepng_error_text(png_error));
+    }
 }
 
 /*---------------------------------------------------------------------------*/
 
 int main(int argc, char* argv[])
 {
-    Params params = DEFAULT_PARAMS;
     std::string fragFilename;
     std::string fragContents;
     AbstractEGL AbtEGL;
     AbstractGLFW AbtGLFW;
+
+    Params params;
+    defaultParams(params);
 
     // parse args
     for (int i = 1; i < argc; i++) {
@@ -242,6 +260,8 @@ int main(int argc, char* argv[])
     GL_SAFECALL(glFlush, );
 
     glfw_render(AbtGLFW);
+
+    savePNG(params);
 
     glfw_terminate(AbtGLFW);
 
