@@ -5,10 +5,7 @@ of GLSL, including GLSL ES.
 
 # TODO
 
- - init glfw
-
- - factorize all egl variables (EGLDisplay, etc) into a single
-   struct. idem for glfw
+ - separate at compilation time.
 
 # Developper notes / design choices
 
