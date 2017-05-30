@@ -257,7 +257,7 @@ int main(int argc, char* argv[])
 
     GL_SAFECALL(glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 
-    GL_SAFECALL(glFlush, );
+    GL_SAFECALL(glFlush);
 
     switch (params.contextProvider) {
     case Ctx_GLFW:

@@ -1,23 +1,24 @@
 CXX=g++
+CFLAGS=-g
 INCLUDE=-I. -I include
 LDFLAGS=-lglfw -ldl -lEGL
 
 all: get_image
 
 get_image: main.cpp common.h egl.o glfw.o glad.o lodepng.o
-	$(CXX) -o $@ $(INCLUDE) $(LDFLAGS) $+
+	$(CXX) $(CFLAGS) -o $@ $(INCLUDE) $(LDFLAGS) $+
 
 egl.o: egl.cpp egl.h
-	$(CXX) -c $(INCLUDE) $?
+	$(CXX) $(CFLAGS) -c $(INCLUDE) $?
 
 glfw.o: glfw.cpp glfw.h glad.c
-	$(CXX) -c $(INCLUDE) $?
+	$(CXX) $(CFLAGS) -c $(INCLUDE) $?
 
 glad.o: glad.c
-	$(CXX) -c $(INCLUDE) $?
+	$(CXX) $(CFLAGS) -c $(INCLUDE) $?
 
 lodepng.o: lodepng.cpp
-	$(CXX) -c $(INCLUDE) $?
+	$(CXX) $(CFLAGS) -c $(INCLUDE) $?
 
 PHONY: clean
 
