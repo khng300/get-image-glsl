@@ -37,10 +37,8 @@ void glfw_init(const Params& params, AbstractGLFW& abt) {
 
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-
+    glfwSwapInterval(1);
     abt.window = window;
-
-    return;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -48,6 +46,13 @@ void glfw_init(const Params& params, AbstractGLFW& abt) {
 void glfw_render(AbstractGLFW& abt) {
     glfwSwapBuffers(abt.window);
     glfwPollEvents();
+}
+
+/*---------------------------------------------------------------------------*/
+
+void glfw_terminate(AbstractGLFW& abt) {
+    glfwDestroyWindow(abt.window);
+    glfwTerminate();
 }
 
 /*---------------------------------------------------------------------------*/

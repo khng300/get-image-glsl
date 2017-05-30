@@ -13,4 +13,6 @@ void glfw_init(const Params& params, AbstractGLFW& abt);
 
 void glfw_render(AbstractGLFW& abt);
 
+void glfw_terminate(AbstractGLFW& abt);
+
 #endif

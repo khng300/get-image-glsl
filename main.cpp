@@ -15,24 +15,15 @@
 #include "GLES/gl.h"
 #include "GLES2/gl2.h"
 
-// ==================================================
-int checkForGLError(const char loc[]) {
-  GLenum res = glGetError();
-  if(res != GL_NO_ERROR) {
-    std::cerr << loc << ": glGetError: " << std::hex << res << std::endl;
-    return EXIT_FAILURE;
-  }
-  return EXIT_SUCCESS;
-}
+/*---------------------------------------------------------------------------*/
 
-#define CHECK_ERROR(loc) \
-do { \
-  if(checkForGLError(loc) == EXIT_FAILURE) { \
-    return EXIT_FAILURE; \
-  } \
-} while(false)
-// ==================================================
-
+#define GL_SAFECALL(func, ...) do  {                    \
+        func(__VA_ARGS__);                              \
+        GLenum __err = glGetError();                    \
+        if (__err != GL_NO_ERROR) {                     \
+            crash("OpenGL failure on: %s()" , #func); \
+        }                                               \
+    } while (0)
 
 /*---------------------------------------------------------------------------*/
 
@@ -100,11 +91,11 @@ void printProgramError(GLuint program) {
 GLSLVersion getVersion(const std::string& fragContents) {
     size_t pos = fragContents.find('\n');
     if (pos == std::string::npos) {
-        crash("%s", "cannot find end-of-line in fragment shader");
+        crash("cannot find end-of-line in fragment shader");
     }
     std::string sub = fragContents.substr(0, pos);
     if (std::string::npos == sub.find("#version")) {
-        crash("%s", "cannot find ``#version'' in first line of fragment shader");
+        crash("cannot find ``#version'' in first line of fragment shader");
     }
     if (std::string::npos != sub.find("100")) { return GLSLv100; }
     if (std::string::npos != sub.find("110")) { return GLSLv110; }
@@ -124,6 +115,12 @@ const char* vtxstr =
 
 /*---------------------------------------------------------------------------*/
 
+void savePNG(Params params) {
+
+}
+
+/*---------------------------------------------------------------------------*/
+
 int main(int argc, char* argv[])
 {
     Params params = DEFAULT_PARAMS;
@@ -136,7 +133,7 @@ int main(int argc, char* argv[])
     for (int i = 1; i < argc; i++) {
         std::string arg = std::string(argv[i]);
         if (arg.compare(0, 2, "--") == 0) {
-            crash("%s", "No -- option yet");
+            crash("No -- option yet");
         }
         if (fragFilename.length() == 0) {
             fragFilename = arg;
@@ -173,40 +170,40 @@ int main(int argc, char* argv[])
     // OpenGL part
     GLuint program = glCreateProgram();
     if (program == 0) {
-        crash("%s", "glCreateProgram()");
+        crash("glCreateProgram()");
     }
 
-    const char *temp; // necessary for some OpenGL primitives
+    const char *temp;
     GLint status = 0;
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     temp = fragContents.c_str();
-    glShaderSource(fragmentShader, 1, &temp, NULL);
-    glCompileShader(fragmentShader);
+    GL_SAFECALL(glShaderSource, fragmentShader, 1, &temp, NULL);
+    GL_SAFECALL(glCompileShader, fragmentShader);
 
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
+    GL_SAFECALL(glGetShaderiv, fragmentShader, GL_COMPILE_STATUS, &status);
     if (!status) {
         printShaderError(fragmentShader);
         crash("Fragment shader compilation failed (%s)", fragFilename.c_str());
     }
 
-    glAttachShader(program, fragmentShader);
+    GL_SAFECALL(glAttachShader, program, fragmentShader);
 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vtxstr, NULL);
-    glCompileShader(vertexShader);
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
+    GL_SAFECALL(glShaderSource, vertexShader, 1, &vtxstr, NULL);
+    GL_SAFECALL(glCompileShader, vertexShader);
+    GL_SAFECALL(glGetShaderiv, vertexShader, GL_COMPILE_STATUS, &status);
     if (!status) {
         printShaderError(vertexShader);
-        crash("%s", "Vertex shader compilation failed");
+        crash("Vertex shader compilation failed");
     }
 
-    glAttachShader(program, vertexShader);
+    GL_SAFECALL(glAttachShader, program, vertexShader);
 
-    glLinkProgram(program);
-    glGetProgramiv(vertexShader, GL_LINK_STATUS, &status);
+    GL_SAFECALL(glLinkProgram, program);
+    GL_SAFECALL(glGetProgramiv, program, GL_LINK_STATUS, &status);
     if (!status) {
         printProgramError(program);
-        crash("%s", "glLinkProgram()");
+        crash("glLinkProgram()");
     }
 
     // ==============================
@@ -235,21 +232,18 @@ int main(int argc, char* argv[])
     glVertexAttribPointer(posAttribLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
 
-    glViewport(0, 0, params.width, params.height);
-    CHECK_ERROR("After glViewport");
+    GL_SAFECALL(glViewport, 0, 0, params.width, params.height);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    CHECK_ERROR("After glClearColor");
-    glClear(GL_COLOR_BUFFER_BIT);
-    CHECK_ERROR("After glClear");
+    GL_SAFECALL(glClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
+    GL_SAFECALL(glClear, GL_COLOR_BUFFER_BIT);
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
-    CHECK_ERROR("After glDrawElements");
+    GL_SAFECALL(glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
 
-    glFlush();
-    CHECK_ERROR("After glFlush");
+    GL_SAFECALL(glFlush, );
 
     glfw_render(AbtGLFW);
+
+    glfw_terminate(AbtGLFW);
 
     // ==============================
 

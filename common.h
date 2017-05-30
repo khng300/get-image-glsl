@@ -39,7 +39,7 @@ extern const Params DEFAULT_PARAMS;
 
 #define crash(fmt, ...) do {                                            \
         printf("%s:%d (%s) ERROR: ", __FILE__, __LINE__, __func__);     \
-        printf(fmt, __VA_ARGS__);                                       \
+        printf(fmt, ##__VA_ARGS__);                                     \
         printf("\n");                                                   \
         exit (EXIT_FAILURE);                                            \
     } while (0)
