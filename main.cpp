@@ -126,29 +126,23 @@ int getVersion(const std::string& fragContents) {
 
 void generateVertexShader(std::string& out, const Params& params) {
     static const std::string vertGenericContents = std::string(
-        "attribute vec2 vert2d;\n"
+        "vec2 _GLF_vertexPosition;\n"
         "void main(void) {\n"
-        "    gl_Position = vec4(vert2d, 0.0, 1.0);\n"
-        "}\n"
-        );
-
-    static const std::string vertVersion300Contents = std::string(
-        "in vec3 aVertexPosition;\n"
-        "void main(void) {\n"
-        "    gl_Position = vec4(aVertexPosition, 1.0);\n"
+        "    gl_Position = vec4(_GLF_vertexPosition, 0.0, 1.0);\n"
         "}\n"
         );
 
     std::stringstream ss;
     ss << "#version " << params.version;
     if (params.version == 300) {
-        ss << " es" << std::endl;
-        ss << vertVersion300Contents;
+        ss << " es" << std::endl << "in ";
     } else {
-        ss << std::endl;
-        ss << vertGenericContents;
+        ss << std::endl << "attribute ";
     }
+    ss << vertGenericContents;
     out = ss.str();
+
+    std::cerr << "Generated vertex shader:\n" << out << std::endl;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -241,13 +235,11 @@ int main(int argc, char* argv[])
 
     // ==============================
 
-    GLint posAttribLocationAttempt = glGetAttribLocation(program, "vert2d");
-    if(posAttribLocationAttempt == -1) {
-        std::cerr << "Error getting vert2d attribute location." << std::endl;
-        return EXIT_FAILURE;
+    GLint vertPosLoc = glGetAttribLocation(program, "_GLF_vertexPosition");
+    if(vertPosLoc == -1) {
+        crash("Cannot find position of _GLF_vertexPosition");
     }
-    GLuint posAttribLocation = (GLuint) posAttribLocationAttempt;
-    glEnableVertexAttribArray(posAttribLocation);
+    glEnableVertexAttribArray((GLuint) vertPosLoc);
 
     glUseProgram(program);
 
@@ -262,16 +254,13 @@ int main(int argc, char* argv[])
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glVertexAttribPointer(posAttribLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer((GLuint) vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
 
     GL_SAFECALL(glViewport, 0, 0, params.width, params.height);
-
     GL_SAFECALL(glClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
     GL_SAFECALL(glClear, GL_COLOR_BUFFER_BIT);
-
     GL_SAFECALL(glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
-
     GL_SAFECALL(glFlush);
 
     context_render(context);
@@ -284,3 +273,5 @@ int main(int argc, char* argv[])
 
     exit(EXIT_SUCCESS);
 }
+
+/*---------------------------------------------------------------------------*/
