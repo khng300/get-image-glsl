@@ -259,11 +259,29 @@ int main(int argc, char* argv[])
 
     GL_SAFECALL(glFlush, );
 
-    glfw_render(AbtGLFW);
+    switch (params.contextProvider) {
+    case Ctx_GLFW:
+        glfw_render(AbtGLFW);
+        break;
+    case Ctx_EGL:
+        egl_render(AbtEGL);
+        break;
+    default:
+        crash("Invalid context provider: %d", params.contextProvider);
+    }
 
     savePNG(params);
 
-    glfw_terminate(AbtGLFW);
+    switch (params.contextProvider) {
+    case Ctx_GLFW:
+        glfw_terminate(AbtGLFW);
+        break;
+    case Ctx_EGL:
+        egl_terminate(AbtEGL);
+        break;
+    default:
+        crash("Invalid context provider: %d", params.contextProvider);
+    }
 
     // ==============================
 

@@ -15,4 +15,8 @@ typedef struct {
 
 void egl_init(const Params& params, AbstractEGL& abt);
 
+void egl_render(AbstractEGL& abt);
+
+void egl_terminate(AbstractEGL& abt);
+
 #endif

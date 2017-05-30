@@ -1,5 +1,7 @@
 #include "egl.h"
 
+/*---------------------------------------------------------------------------*/
+
 void egl_init(const Params& params, AbstractEGL& abt) {
 
     EGLDisplay& display = abt.display;
@@ -67,3 +69,17 @@ void egl_init(const Params& params, AbstractEGL& abt) {
 
     eglMakeCurrent(display, surface, surface, context);
 }
+
+/*---------------------------------------------------------------------------*/
+
+void egl_render(AbstractEGL& abt) {
+    eglSwapBuffers(abt.display, abt.surface);
+}
+
+/*---------------------------------------------------------------------------*/
+
+void egl_terminate(AbstractEGL& abt) {
+    eglTerminate(abt.display);
+}
+
+/*---------------------------------------------------------------------------*/
