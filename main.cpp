@@ -259,7 +259,6 @@ void setUniformsJSON(const GLuint& program, const std::string& fragFilename, con
 
     for (int i = 0; i < nbUniforms; i++) {
         GL_SAFECALL(glGetActiveUniform, program, i, uniformNameMaxLength, NULL, &uniformSize, &uniformType, uniformName);
-        std::cout << "UNIFORM " << i << ": " << uniformName << " size:" << uniformSize << std::endl;
 
         if (j.count(uniformName) == 0) {
             crash("missing JSON entry for uniform: %s", uniformName);
@@ -424,29 +423,27 @@ int main(int argc, char* argv[])
         crash("glLinkProgram()");
     }
 
-    // ==============================
-
     GLint vertPosLoc = glGetAttribLocation(program, "_GLF_vertexPosition");
     if(vertPosLoc == -1) {
         crash("Cannot find position of _GLF_vertexPosition");
     }
-    glEnableVertexAttribArray((GLuint) vertPosLoc);
+    GL_SAFECALL(glEnableVertexAttribArray, (GLuint) vertPosLoc);
 
-    glUseProgram(program);
+    GL_SAFECALL(glUseProgram, program);
 
     GLuint vertexBuffer;
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    GL_SAFECALL(glGenBuffers, 1, &vertexBuffer);
+    GL_SAFECALL(glBindBuffer, GL_ARRAY_BUFFER, vertexBuffer);
+    GL_SAFECALL(glBufferData, GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     GLuint indicesBuffer;
-    glGenBuffers(1, &indicesBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    GL_SAFECALL(glGenBuffers, 1, &indicesBuffer);
+    GL_SAFECALL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
+    GL_SAFECALL(glBufferData, GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glVertexAttribPointer((GLuint) vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
+    GL_SAFECALL(glBindBuffer, GL_ARRAY_BUFFER, vertexBuffer);
+    GL_SAFECALL(glVertexAttribPointer, (GLuint) vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    GL_SAFECALL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
 
     setUniformsJSON(program, fragFilename, params);
 
@@ -461,8 +458,6 @@ int main(int argc, char* argv[])
     savePNG(params);
 
     context_terminate(context);
-
-    // ==============================
 
     exit(EXIT_SUCCESS);
 }
