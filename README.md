@@ -1,13 +1,13 @@
 # get-image-glsl
 
-This program renders a fragment shader, it aims at handlging any version
-of GLSL, including GLSL ES.
+This program renders a fragment shader, it can be compiled with
+different context provider, currently EGL or GLFW.
 
 # TODO
 
- - add JSON support
-
  - use cmake
+
+ - use EGL for es shader with GLFW
 
 # Developper notes / design choices
 
