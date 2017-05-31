@@ -37,6 +37,8 @@ static void setParams(Params& params, int argc, char *argv[]) {
                 params.exitCompile = true;
             } else if (arg == "--exit-linking") {
                 params.exitLinking = true;
+            } else if (arg == "--output") {
+                params.output = argv[++i];
             } else {
                 crash("Invalid option: %s", argv[i]);
             }
@@ -400,7 +402,7 @@ void openglRender(const Params& params, const std::string& fragContents) {
     }
 
     GLint vertPosLoc = glGetAttribLocation(program, "_GLF_vertexPosition");
-    if(vertPosLoc == -1) {
+    if (vertPosLoc == -1) {
         crash("Cannot find position of _GLF_vertexPosition");
     }
     GL_SAFECALL(glEnableVertexAttribArray, (GLuint) vertPosLoc);
