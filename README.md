@@ -5,9 +5,9 @@ different context provider, currently EGL or GLFW.
 
 # TODO
 
- - use cmake
+ - use EGL for ES shader with GLFW
 
- - use EGL for es shader with GLFW
+ - test all GLSL versions
 
 # Developper notes / design choices
 
