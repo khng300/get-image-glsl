@@ -243,7 +243,7 @@ void setUniformsJSON(const GLuint& program, const std::string& fragFilename, con
     json j = json({});
     if (isFile(jsonFilename)) {
         std::string jsonContent;
-        readFile(jsonFilename, jsonContent);
+        readFile(jsonContent, jsonFilename);
         j = json::parse(jsonContent);
     } else {
         std::cerr << "Warning: file '" << jsonFilename << "' not found, will rely on default uniform values only" << std::endl;
