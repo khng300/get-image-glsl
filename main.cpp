@@ -5,9 +5,9 @@
 #include <sstream>
 #include <vector>
 
-#if   defined GETIMAGE_CONTEXT_EGL
+#if   (GETIMAGE_CONTEXT == EGL)
 #include "context_egl.h"
-#elif defined GETIMAGE_CONTEXT_GLFW
+#elif (GETIMAGE_CONTEXT == GLFW)
 #include "context_glfw.h"
 #else
 #error Must define a context preprocessor macro!
@@ -159,7 +159,7 @@ static void setJSONDefaultEntries(json& j, const Params& params) {
 template<typename T>
 T *getArray(const json& j) {
     T *a = new T[j.size()];
-    for (int i = 0; i < j.size(); i++) {
+    for (unsigned i = 0; i < j.size(); i++) {
         a[i] = j[i];
     }
     return a;
@@ -290,7 +290,7 @@ void setUniformsJSON(const GLuint& program, const std::string& fragFilename, con
         }
 
         else {
-            crash("unknown/unsupported uniform init func: %s", uniformFunc);
+            crash("unknown/unsupported uniform init func: %s", uniformFunc.c_str());
         }
         GL_CHECKERR(uniformFunc.c_str());
     }
