@@ -21,6 +21,7 @@ static void defaultParams(Params& params) {
     params.version = 0;
     params.fragFilename = "";
     params.output = "output.png";
+    params.exitCompile = false;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -28,12 +29,17 @@ static void defaultParams(Params& params) {
 static void setParams(Params& params, int argc, char *argv[]) {
     defaultParams(params);
 
-    for (int i = 0; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
         std::string arg = std::string(argv[i]);
         if (arg.compare(0, 2, "--") == 0) {
-            crash("No -- option yet");
+            if (arg == "--exit-compile") {
+                params.exitCompile = true;
+            } else {
+                crash("Invalid option: %s", argv[i]);
+            }
+            continue;
         }
-        if (params.fragFilename.length() == 0) {
+        if (params.fragFilename == "") {
             params.fragFilename = arg;
         } else {
             crash("Unexpected extra argument: %s", arg.c_str());
@@ -356,6 +362,10 @@ void openglRender(const Params& params, const std::string& fragContents) {
     if (!status) {
         printShaderError(fragmentShader);
         crash("Fragment shader compilation failed (%s)", params.fragFilename.c_str());
+    }
+
+    if (params.exitCompile) {
+        exit(EXIT_SUCCESS);
     }
 
     GL_SAFECALL(glAttachShader, program, fragmentShader);

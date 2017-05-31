@@ -13,6 +13,7 @@ typedef struct {
     int version;
     std::string fragFilename;
     std::string output;
+    bool exitCompile;
 } Params;
 
 /*---------------------------------------------------------------------------*/
