@@ -246,7 +246,7 @@ void setUniformsJSON(const GLuint& program, const std::string& fragFilename, con
         readFile(jsonFilename, jsonContent);
         j = json::parse(jsonContent);
     } else {
-        std::cerr << "Warning: file '" << jsonFilename << "' not found, using only default JSON values" << std::endl;
+        std::cerr << "Warning: file '" << jsonFilename << "' not found, will rely on default uniform values only" << std::endl;
     }
 
     setJSONDefaultEntries(j, params);
