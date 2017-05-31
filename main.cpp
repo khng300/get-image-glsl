@@ -5,18 +5,8 @@
 #include <sstream>
 #include <vector>
 
-#define CONTEXT_EGL  1
-#define CONTEXT_GLFW 2
-
-#if   (GETIMAGE_CONTEXT == CONTEXT_EGL)
-#include "context_egl.h"
-#elif (GETIMAGE_CONTEXT == CONTEXT_GLFW)
-#include "context_glfw.h"
-#else
-#error Must define a context preprocessor macro!
-#endif
-
 #include "common.h"
+#include "openglcontext.h"
 #include "lodepng.h"
 #include "json.hpp"
 using json = nlohmann::json;
