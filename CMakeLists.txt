@@ -9,6 +9,10 @@ set(CMAKE_FIND_LIBRARY_PREFIXES "lib" "${CMAKE_FIND_LIBRARY_PREFIXES}")
 # Use c++11, this is compiler-agnostic (not GCC specific)
 set (CMAKE_CXX_STANDARD 11)
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "-Wall ${CMAKE_CXX_FLAGS}")
+endif()
+
 # Set rpath for Mac and Linux.
 if(APPLE)
     SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH}:@executable_path/../lib:@executable_path/" )
@@ -29,15 +33,19 @@ if(NOT LIB_GLES)
 endif()
 
 add_executable(get_image_egl main.cpp lodepng.cpp context_egl.cpp)
-add_definitions(-DGETIMAGE_CONTEXT=EGL)
+target_compile_definitions(get_image_egl PUBLIC -DGETIMAGE_CONTEXT=EGL)
 target_link_libraries(get_image_egl ${LIB_EGL} ${LIB_GLES})
 target_include_directories(get_image_egl PUBLIC)
 
+# GLFW
+find_package(glfw3 3.2 REQUIRED)
+
+add_executable(get_image_glfw main.cpp lodepng.cpp context_glfw.cpp glad.c)
+target_compile_definitions(get_image_glfw PUBLIC -DGETIMAGE_CONTEXT=GLFW)
+target_link_libraries(get_image_glfw glfw dl)
+target_include_directories(get_image_glfw PUBLIC include)
+
 # common
-install(TARGETS get_image_egl
+install(TARGETS get_image_egl get_image_glfw
     DESTINATION bin
 )
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "-Wall ${CMAKE_CXX_FLAGS}")
-endif()
