@@ -11,8 +11,4 @@ typedef struct {
     GLFWwindow* window;
 } Context;
 
-void context_init(const Params& params, Context& ctx);
-void context_render(Context& ctx);
-void context_terminate(Context& ctx);
-
 #endif

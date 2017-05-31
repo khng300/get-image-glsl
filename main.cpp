@@ -317,6 +317,20 @@ void setUniformsJSON(const GLuint& program, const Params& params) {
 // OpenGL
 /*---------------------------------------------------------------------------*/
 
+const char *opengl_error_string(GLenum err) {
+    switch (err) {
+    case GL_INVALID_ENUM: return "GL_INVALID_ENUM";
+    case GL_INVALID_VALUE: return "GL_INVALID_VALUE";
+    case GL_INVALID_OPERATION: return "GL_INVALID_OPERATION";
+    case GL_STACK_OVERFLOW: return "GL_STACK_OVERFLOW";
+    case GL_STACK_UNDERFLOW: return "GL_STACK_UNDERFLOW";
+    case GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY";
+    default: return "UNKNOW_ERROR";
+    }
+}
+
+/*---------------------------------------------------------------------------*/
+
 void printShaderError(GLuint shader) {
     GLint length = 0;
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
@@ -427,9 +441,7 @@ void openglRender(const Params& params, const std::string& fragContents) {
     GL_SAFECALL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
     GL_SAFECALL(glBufferData, GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    GL_SAFECALL(glBindBuffer, GL_ARRAY_BUFFER, vertexBuffer);
     GL_SAFECALL(glVertexAttribPointer, (GLuint) vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    GL_SAFECALL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
 
     setUniformsJSON(program, params);
 

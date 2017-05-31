@@ -13,12 +13,24 @@
 #endif
 
 /*---------------------------------------------------------------------------*/
+// Primitives all context should define
 
-#define GL_CHECKERR(strfunc) do {                       \
-        GLenum __err = glGetError();                    \
-        if (__err != GL_NO_ERROR) {                     \
-            crash("OpenGL failure on: %s()" , strfunc); \
-        }                                               \
+void context_init(const Params& params, Context& ctx);
+void context_render(Context& ctx);
+void context_terminate(Context& ctx);
+
+/*---------------------------------------------------------------------------*/
+// This one is defined is main.cpp, but used in the macro belows
+
+const char *opengl_error_string(GLenum err);
+
+/*---------------------------------------------------------------------------*/
+
+#define GL_CHECKERR(strfunc) do {                                       \
+        GLenum __err = glGetError();                                    \
+        if (__err != GL_NO_ERROR) {                                     \
+            crash("OpenGL error: %s(): %s" , strfunc, opengl_error_string(__err)); \
+        }                                                               \
     } while (0)
 
 /*---------------------------------------------------------------------------*/
