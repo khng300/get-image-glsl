@@ -33,7 +33,7 @@ if(NOT LIB_GLES)
 endif()
 
 add_executable(get_image_egl main.cpp lodepng.cpp context_egl.cpp)
-target_compile_definitions(get_image_egl PUBLIC -DGETIMAGE_CONTEXT=EGL)
+target_compile_definitions(get_image_egl PUBLIC -DGETIMAGE_CONTEXT=CONTEXT_EGL)
 target_link_libraries(get_image_egl ${LIB_EGL} ${LIB_GLES})
 target_include_directories(get_image_egl PUBLIC)
 
@@ -41,7 +41,7 @@ target_include_directories(get_image_egl PUBLIC)
 find_package(glfw3 3.2 REQUIRED)
 
 add_executable(get_image_glfw main.cpp lodepng.cpp context_glfw.cpp glad.c)
-target_compile_definitions(get_image_glfw PUBLIC -DGETIMAGE_CONTEXT=GLFW)
+target_compile_definitions(get_image_glfw PUBLIC -DGETIMAGE_CONTEXT=CONTEXT_GLFW)
 target_link_libraries(get_image_glfw glfw dl)
 target_include_directories(get_image_glfw PUBLIC include)
 
