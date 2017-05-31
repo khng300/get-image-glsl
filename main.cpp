@@ -18,9 +18,8 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
-// 4 channels: RGBA
-#define CHANNELS (4)
-
+/*---------------------------------------------------------------------------*/
+// Default parameters
 /*---------------------------------------------------------------------------*/
 
 static void defaultParams(Params& params) {
@@ -31,6 +30,8 @@ static void defaultParams(Params& params) {
 }
 
 /*---------------------------------------------------------------------------*/
+// Helpers
+/*---------------------------------------------------------------------------*/
 
 #define GL_CHECKERR(strfunc) do {                       \
         GLenum __err = glGetError();                    \
@@ -39,6 +40,8 @@ static void defaultParams(Params& params) {
         }                                               \
     } while (0)
 
+/*---------------------------------------------------------------------------*/
+
 #define GL_SAFECALL(func, ...) do  {                    \
         func(__VA_ARGS__);                              \
         GL_CHECKERR(#func);                             \
@@ -46,17 +49,10 @@ static void defaultParams(Params& params) {
 
 /*---------------------------------------------------------------------------*/
 
-const float vertices[] = {
-  -1.0f,  1.0f,
-  -1.0f, -1.0f,
-   1.0f, -1.0f,
-   1.0f,  1.0f
-};
-
-const GLubyte indices[] = {
-  0, 1, 2,
-  2, 3, 0
-};
+bool isFile(std::string filename) {
+    std::ifstream ifs(filename.c_str());
+    return ifs.good();
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -68,41 +64,6 @@ void readFile(std::string& contents, const std::string& filename) {
     std::stringstream ss;
     ss << ifs.rdbuf();
     contents = ss.str();
-}
-
-/*---------------------------------------------------------------------------*/
-
-bool isFile(std::string filename) {
-    std::ifstream ifs(filename.c_str());
-    return ifs.good();
-}
-
-/*---------------------------------------------------------------------------*/
-
-void printShaderError(GLuint shader) {
-    GLint length = 0;
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
-    // The length includes the NULL character
-    std::vector<GLchar> errorLog((size_t) length, 0);
-    glGetShaderInfoLog(shader, length, &length, &errorLog[0]);
-    if(length > 0) {
-        std::string s(&errorLog[0]);
-        std::cout << s << std::endl;
-    }
-}
-
-/*---------------------------------------------------------------------------*/
-
-void printProgramError(GLuint program) {
-    GLint length = 0;
-    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
-    // The length includes the NULL character
-    std::vector<GLchar> errorLog((size_t) length, 0);
-    glGetProgramInfoLog(program, length, &length, &errorLog[0]);
-    if(length > 0) {
-        std::string s(&errorLog[0]);
-        std::cout << s << std::endl;
-    }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -162,23 +123,7 @@ void generateVertexShader(std::string& out, const Params& params) {
 }
 
 /*---------------------------------------------------------------------------*/
-
-void savePNG(Params& params) {
-    unsigned int uwidth = (unsigned int) params.width;
-    unsigned int uheight = (unsigned int) params.height;
-    std::vector<std::uint8_t> data(uwidth * uheight * CHANNELS);
-    GL_SAFECALL(glReadPixels, 0, 0, uwidth, uheight, GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
-    std::vector<std::uint8_t> flipped_data(uwidth * uheight * CHANNELS);
-    for (unsigned int h = 0; h < uheight ; h++)
-        for (unsigned int col = 0; col < uwidth * CHANNELS; col++)
-            flipped_data[h * uwidth * CHANNELS + col] =
-                data[(uheight - h - 1) * uwidth * CHANNELS + col];
-    unsigned png_error = lodepng::encode(params.output, flipped_data, uwidth, uheight);
-    if (png_error) {
-        crash("lodepng: %s", lodepng_error_text(png_error));
-    }
-}
-
+// JSON uniforms
 /*---------------------------------------------------------------------------*/
 
 static void setJSONDefaultEntries(json& j, const Params& params) {
@@ -354,34 +299,51 @@ void setUniformsJSON(const GLuint& program, const std::string& fragFilename, con
 }
 
 /*---------------------------------------------------------------------------*/
+// OpenGL
+/*---------------------------------------------------------------------------*/
 
-int main(int argc, char* argv[])
-{
-    std::string fragFilename;
-    std::string fragContents;
-    Context context;
-    Params params;
-    defaultParams(params);
-
-    // parse args
-    for (int i = 1; i < argc; i++) {
-        std::string arg = std::string(argv[i]);
-        if (arg.compare(0, 2, "--") == 0) {
-            crash("No -- option yet");
-        }
-        if (fragFilename.length() == 0) {
-            fragFilename = arg;
-        } else {
-            crash("Unexpected extra argument: %s", arg.c_str());
-        }
+void printShaderError(GLuint shader) {
+    GLint length = 0;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
+    // The length includes the NULL character
+    std::vector<GLchar> errorLog((size_t) length, 0);
+    glGetShaderInfoLog(shader, length, &length, &errorLog[0]);
+    if(length > 0) {
+        std::string s(&errorLog[0]);
+        std::cout << s << std::endl;
     }
+}
 
-    readFile(fragContents, fragFilename);
-    params.version = getVersion(fragContents);
+/*---------------------------------------------------------------------------*/
 
-    context_init(params, context);
+void printProgramError(GLuint program) {
+    GLint length = 0;
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+    // The length includes the NULL character
+    std::vector<GLchar> errorLog((size_t) length, 0);
+    glGetProgramInfoLog(program, length, &length, &errorLog[0]);
+    if(length > 0) {
+        std::string s(&errorLog[0]);
+        std::cout << s << std::endl;
+    }
+}
 
-    // OpenGL part
+/*---------------------------------------------------------------------------*/
+
+void openglRender(const Params& params, const std::string& fragFilename, const std::string& fragContents) {
+
+    const float vertices[] = {
+        -1.0f,  1.0f,
+        -1.0f, -1.0f,
+         1.0f, -1.0f,
+         1.0f,  1.0f
+    };
+
+    const GLubyte indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+
     GLuint program = glCreateProgram();
     if (program == 0) {
         crash("glCreateProgram()");
@@ -452,6 +414,64 @@ int main(int argc, char* argv[])
     GL_SAFECALL(glClear, GL_COLOR_BUFFER_BIT);
     GL_SAFECALL(glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
     GL_SAFECALL(glFlush);
+}
+
+/*---------------------------------------------------------------------------*/
+// PNG
+/*---------------------------------------------------------------------------*/
+
+// 4 channels: RGBA
+#define CHANNELS (4)
+
+/*---------------------------------------------------------------------------*/
+
+void savePNG(Params& params) {
+    unsigned int uwidth = (unsigned int) params.width;
+    unsigned int uheight = (unsigned int) params.height;
+    std::vector<std::uint8_t> data(uwidth * uheight * CHANNELS);
+    GL_SAFECALL(glReadPixels, 0, 0, uwidth, uheight, GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
+    std::vector<std::uint8_t> flipped_data(uwidth * uheight * CHANNELS);
+    for (unsigned int h = 0; h < uheight ; h++)
+        for (unsigned int col = 0; col < uwidth * CHANNELS; col++)
+            flipped_data[h * uwidth * CHANNELS + col] =
+                data[(uheight - h - 1) * uwidth * CHANNELS + col];
+    unsigned png_error = lodepng::encode(params.output, flipped_data, uwidth, uheight);
+    if (png_error) {
+        crash("lodepng: %s", lodepng_error_text(png_error));
+    }
+}
+
+/*---------------------------------------------------------------------------*/
+// Main
+/*---------------------------------------------------------------------------*/
+
+int main(int argc, char* argv[])
+{
+    std::string fragFilename;
+    std::string fragContents;
+    Context context;
+    Params params;
+    defaultParams(params);
+
+    // parse args
+    for (int i = 1; i < argc; i++) {
+        std::string arg = std::string(argv[i]);
+        if (arg.compare(0, 2, "--") == 0) {
+            crash("No -- option yet");
+        }
+        if (fragFilename.length() == 0) {
+            fragFilename = arg;
+        } else {
+            crash("Unexpected extra argument: %s", arg.c_str());
+        }
+    }
+
+    readFile(fragContents, fragFilename);
+    params.version = getVersion(fragContents);
+
+    context_init(params, context);
+
+    openglRender(params, fragFilename, fragContents);
 
     context_render(context);
 
