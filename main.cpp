@@ -20,6 +20,7 @@ static void defaultParams(Params& params) {
     params.height = 256;
     params.version = 0;
     params.fragFilename = "";
+    params.vertFilename = "";
     params.output = "output.png";
     params.exitCompile = false;
     params.exitLinking = false;
@@ -39,6 +40,8 @@ static void setParams(Params& params, int argc, char *argv[]) {
                 params.exitLinking = true;
             } else if (arg == "--output") {
                 params.output = argv[++i];
+            } else if (arg == "--vertex") {
+                params.vertFilename = argv[++i];
             } else {
                 crash("Invalid option: %s", argv[i]);
             }
@@ -113,6 +116,11 @@ void generateVertexShader(std::string& out, const Params& params) {
         "    gl_Position = vec4(_GLF_vertexPosition, 0.0, 1.0);\n"
         "}\n"
         );
+
+    if (params.vertFilename != "") {
+        readFile(out, params.vertFilename);
+        return;
+    }
 
     std::stringstream ss;
     ss << "#version " << params.version;

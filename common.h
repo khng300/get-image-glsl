@@ -12,6 +12,7 @@ typedef struct {
     int height;
     int version;
     std::string fragFilename;
+    std::string vertFilename;
     std::string output;
     bool exitCompile;
     bool exitLinking;
