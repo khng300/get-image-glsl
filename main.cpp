@@ -373,14 +373,10 @@ void openglRender(const Params& params, const std::string& fragContents) {
         2, 3, 0
     };
 
-    GLuint program = glCreateProgram();
-    if (program == 0) {
-        crash("glCreateProgram()");
-    }
-
     const char *temp;
     GLint status = 0;
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    GL_CHECKERR("glCreateShader");
     temp = fragContents.c_str();
     GL_SAFECALL(glShaderSource, fragmentShader, 1, &temp, NULL);
     GL_SAFECALL(glCompileShader, fragmentShader);
@@ -390,12 +386,9 @@ void openglRender(const Params& params, const std::string& fragContents) {
         printShaderError(fragmentShader);
         crash("Fragment shader compilation failed (%s)", params.fragFilename.c_str());
     }
-
     if (params.exitCompile) {
         exit(EXIT_SUCCESS);
     }
-
-    GL_SAFECALL(glAttachShader, program, fragmentShader);
 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     GL_CHECKERR("glCreateShader");
@@ -410,15 +403,19 @@ void openglRender(const Params& params, const std::string& fragContents) {
         crash("Vertex shader compilation failed");
     }
 
+    GLuint program = glCreateProgram();
+    GL_CHECKERR("glCreateProgram");
+    if (program == 0) {
+        crash("glCreateProgram()");
+    }
     GL_SAFECALL(glAttachShader, program, vertexShader);
-
+    GL_SAFECALL(glAttachShader, program, fragmentShader);
     GL_SAFECALL(glLinkProgram, program);
     GL_SAFECALL(glGetProgramiv, program, GL_LINK_STATUS, &status);
     if (!status) {
         printProgramError(program);
         crash("glLinkProgram()");
     }
-
     if (params.exitLinking) {
         exit(EXIT_SUCCESS);
     }
