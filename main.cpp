@@ -181,35 +181,31 @@ void savePNG(Params& params) {
 
 /*---------------------------------------------------------------------------*/
 
-void setJSONDefaultEntries(json& j, const Params& params) {
+static void setJSONDefaultEntries(json& j, const Params& params) {
 
-    if (j.count("injectionSwitch") == 0) {
-        j["injectionSwitch"] = {
-            {"func", "glUniform2f"},
-            { "args", { 0.0f, 1.0f }}
-        };
-    }
+    json defaults = {
+        {"injectionSwitch", {
+                {"func", "glUniform2f"},
+                {"args", {0.0f, 1.0f}}
+            }},
+        {"time", {
+                {"func", "glUniform1f"},
+                {"args", {0.0f}}
+            }},
+        {"mouse", {
+                {"func", "glUniform2f"},
+                {"args", {0.0f, 0.0f}}
+            }},
+        {"resolution", {
+                {"func", "glUniform2f"},
+                {"args", {float(params.width), float(params.height)}}
+            }}
+    };
 
-    if (j.count("time") == 0) {
-        j["time"] = {
-            {"func", "glUniform1f"},
-            { "args", { 0.0f }}
-        };
-    }
-
-
-    if (j.count("mouse") == 0) {
-        j["mouse"] = {
-            {"func", "glUniform2f"},
-            { "args", { 0.0f, 0.0f }}
-        };
-    }
-
-    if (j.count("resolution") == 0) {
-        j["resolution"] = {
-            {"func", "glUniform2f"},
-            { "args", { float(params.width), float(params.height) }}
-        };
+    for (json::iterator it = defaults.begin(); it != defaults.end(); ++it) {
+        if (j.count(it.key()) == 0) {
+            j[it.key()] = it.value();
+        }
     }
 }
 
@@ -244,7 +240,7 @@ void setUniformsJSON(const GLuint& program, const std::string& fragFilename, con
     // Read JSON file
     std::string jsonFilename(fragFilename);
     jsonFilename.replace(jsonFilename.end()-4, jsonFilename.end(), "json");
-    json j;
+    json j = json({});
     if (isFile(jsonFilename)) {
         std::string jsonContent;
         readFile(jsonFilename, jsonContent);
