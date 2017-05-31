@@ -5,9 +5,12 @@
 #include <sstream>
 #include <vector>
 
-#if   (GETIMAGE_CONTEXT == EGL)
+#define CONTEXT_EGL  1
+#define CONTEXT_GLFW 2
+
+#if   (GETIMAGE_CONTEXT == CONTEXT_EGL)
 #include "context_egl.h"
-#elif (GETIMAGE_CONTEXT == GLFW)
+#elif (GETIMAGE_CONTEXT == CONTEXT_GLFW)
 #include "context_glfw.h"
 #else
 #error Must define a context preprocessor macro!
