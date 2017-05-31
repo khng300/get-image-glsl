@@ -11,6 +11,7 @@ typedef struct {
     int width;
     int height;
     int version;
+    std::string fragFilename;
     std::string output;
 } Params;
 

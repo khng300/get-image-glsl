@@ -12,14 +12,33 @@
 using json = nlohmann::json;
 
 /*---------------------------------------------------------------------------*/
-// Default parameters
+// Parameters, argument parsing
 /*---------------------------------------------------------------------------*/
 
 static void defaultParams(Params& params) {
     params.width = 256;
     params.height = 256;
     params.version = 0;
+    params.fragFilename = "";
     params.output = "output.png";
+}
+
+/*---------------------------------------------------------------------------*/
+
+static void setParams(Params& params, int argc, char *argv[]) {
+    defaultParams(params);
+
+    for (int i = 0; i < argc; i++) {
+        std::string arg = std::string(argv[i]);
+        if (arg.compare(0, 2, "--") == 0) {
+            crash("No -- option yet");
+        }
+        if (params.fragFilename.length() == 0) {
+            params.fragFilename = arg;
+        } else {
+            crash("Unexpected extra argument: %s", arg.c_str());
+        }
+    }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -151,7 +170,7 @@ T *getArray(const json& j) {
 
 /*---------------------------------------------------------------------------*/
 
-void setUniformsJSON(const GLuint& program, const std::string& fragFilename, const Params& params) {
+void setUniformsJSON(const GLuint& program, const Params& params) {
     GLint nbUniforms;
     GL_SAFECALL(glGetProgramiv, program, GL_ACTIVE_UNIFORMS, &nbUniforms);
     if (nbUniforms == 0) {
@@ -160,7 +179,7 @@ void setUniformsJSON(const GLuint& program, const std::string& fragFilename, con
     }
 
     // Read JSON file
-    std::string jsonFilename(fragFilename);
+    std::string jsonFilename(params.fragFilename);
     jsonFilename.replace(jsonFilename.end()-4, jsonFilename.end(), "json");
     json j = json({});
     if (isFile(jsonFilename)) {
@@ -307,7 +326,7 @@ void printProgramError(GLuint program) {
 
 /*---------------------------------------------------------------------------*/
 
-void openglRender(const Params& params, const std::string& fragFilename, const std::string& fragContents) {
+void openglRender(const Params& params, const std::string& fragContents) {
 
     const float vertices[] = {
         -1.0f,  1.0f,
@@ -336,7 +355,7 @@ void openglRender(const Params& params, const std::string& fragFilename, const s
     GL_SAFECALL(glGetShaderiv, fragmentShader, GL_COMPILE_STATUS, &status);
     if (!status) {
         printShaderError(fragmentShader);
-        crash("Fragment shader compilation failed (%s)", fragFilename.c_str());
+        crash("Fragment shader compilation failed (%s)", params.fragFilename.c_str());
     }
 
     GL_SAFECALL(glAttachShader, program, fragmentShader);
@@ -384,7 +403,7 @@ void openglRender(const Params& params, const std::string& fragFilename, const s
     GL_SAFECALL(glVertexAttribPointer, (GLuint) vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
     GL_SAFECALL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
 
-    setUniformsJSON(program, fragFilename, params);
+    setUniformsJSON(program, params);
 
     GL_SAFECALL(glViewport, 0, 0, params.width, params.height);
     GL_SAFECALL(glClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
@@ -424,38 +443,18 @@ void savePNG(Params& params) {
 
 int main(int argc, char* argv[])
 {
-    std::string fragFilename;
     std::string fragContents;
     Context context;
     Params params;
-    defaultParams(params);
 
-    // parse args
-    for (int i = 1; i < argc; i++) {
-        std::string arg = std::string(argv[i]);
-        if (arg.compare(0, 2, "--") == 0) {
-            crash("No -- option yet");
-        }
-        if (fragFilename.length() == 0) {
-            fragFilename = arg;
-        } else {
-            crash("Unexpected extra argument: %s", arg.c_str());
-        }
-    }
-
-    readFile(fragContents, fragFilename);
+    setParams(params, argc, argv);
+    readFile(fragContents, params.fragFilename);
     params.version = getVersion(fragContents);
-
     context_init(params, context);
-
-    openglRender(params, fragFilename, fragContents);
-
+    openglRender(params, fragContents);
     context_render(context);
-
     savePNG(params);
-
     context_terminate(context);
-
     exit(EXIT_SUCCESS);
 }
 
