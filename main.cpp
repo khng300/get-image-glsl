@@ -15,7 +15,10 @@
 
 #include "common.h"
 #include "lodepng.h"
+#include "json.hpp"
+using json = nlohmann::json;
 
+// 4 channels: RGBA
 #define CHANNELS (4)
 
 /*---------------------------------------------------------------------------*/
@@ -29,12 +32,16 @@ static void defaultParams(Params& params) {
 
 /*---------------------------------------------------------------------------*/
 
-#define GL_SAFECALL(func, ...) do  {                    \
-        func(__VA_ARGS__);                              \
+#define GL_CHECKERR(strfunc) do {                       \
         GLenum __err = glGetError();                    \
         if (__err != GL_NO_ERROR) {                     \
-            crash("OpenGL failure on: %s()" , #func);   \
+            crash("OpenGL failure on: %s()" , strfunc); \
         }                                               \
+    } while (0)
+
+#define GL_SAFECALL(func, ...) do  {                    \
+        func(__VA_ARGS__);                              \
+        GL_CHECKERR(#func);                             \
     } while (0)
 
 /*---------------------------------------------------------------------------*/
@@ -61,6 +68,13 @@ void readFile(std::string& contents, const std::string& filename) {
     std::stringstream ss;
     ss << ifs.rdbuf();
     contents = ss.str();
+}
+
+/*---------------------------------------------------------------------------*/
+
+bool isFile(std::string filename) {
+    std::ifstream ifs(filename.c_str());
+    return ifs.good();
 }
 
 /*---------------------------------------------------------------------------*/
@@ -144,7 +158,7 @@ void generateVertexShader(std::string& out, const Params& params) {
     ss << vertGenericContents;
     out = ss.str();
 
-    std::cerr << "Generated vertex shader:\n" << out << std::endl;
+    //std::cerr << "Generated vertex shader:\n" << out << std::endl;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -163,6 +177,185 @@ void savePNG(Params& params) {
     if (png_error) {
         crash("lodepng: %s", lodepng_error_text(png_error));
     }
+}
+
+/*---------------------------------------------------------------------------*/
+
+void setJSONDefaultEntries(json& j, const Params& params) {
+
+    if (j.count("injectionSwitch") == 0) {
+        j["injectionSwitch"] = {
+            {"func", "glUniform2f"},
+            { "args", { 0.0f, 1.0f }}
+        };
+    }
+
+    if (j.count("time") == 0) {
+        j["time"] = {
+            {"func", "glUniform1f"},
+            { "args", { 0.0f }}
+        };
+    }
+
+
+    if (j.count("mouse") == 0) {
+        j["mouse"] = {
+            {"func", "glUniform2f"},
+            { "args", { 0.0f, 0.0f }}
+        };
+    }
+
+    if (j.count("resolution") == 0) {
+        j["resolution"] = {
+            {"func", "glUniform2f"},
+            { "args", { float(params.width), float(params.height) }}
+        };
+    }
+}
+
+/*---------------------------------------------------------------------------*/
+
+template<typename T>
+T *getArray(const json& j) {
+    T *a = new T[j.size()];
+    for (int i = 0; i < j.size(); i++) {
+        a[i] = j[i];
+    }
+    return a;
+}
+
+/*---------------------------------------------------------------------------*/
+
+#define GLUNIFORM_ARRAYINIT(funcname, uniformloc, gltype, jsonarray)    \
+    gltype *a = getArray<gltype>(jsonarray);                            \
+    funcname(uniformloc, jsonarray.size(), a);                          \
+    delete [] a
+
+/*---------------------------------------------------------------------------*/
+
+void setUniformsJSON(const GLuint& program, const std::string& fragFilename, const Params& params) {
+    GLint nbUniforms;
+    GL_SAFECALL(glGetProgramiv, program, GL_ACTIVE_UNIFORMS, &nbUniforms);
+    if (nbUniforms == 0) {
+        // If there are no uniforms to set, return now
+        return;
+    }
+
+    // Read JSON file
+    std::string jsonFilename(fragFilename);
+    jsonFilename.replace(jsonFilename.end()-4, jsonFilename.end(), "json");
+    json j;
+    if (isFile(jsonFilename)) {
+        std::string jsonContent;
+        readFile(jsonFilename, jsonContent);
+        j = json::parse(jsonContent);
+    } else {
+        std::cerr << "Warning: file '" << jsonFilename << "' not found, using only default JSON values" << std::endl;
+    }
+
+    setJSONDefaultEntries(j, params);
+
+    GLint uniformNameMaxLength = 0;
+    GL_SAFECALL(glGetProgramiv, program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &uniformNameMaxLength);
+    GLchar *uniformName = new GLchar[uniformNameMaxLength];
+    GLint uniformSize;
+    GLenum uniformType;
+
+    for (int i = 0; i < nbUniforms; i++) {
+        GL_SAFECALL(glGetActiveUniform, program, i, uniformNameMaxLength, NULL, &uniformSize, &uniformType, uniformName);
+        std::cout << "UNIFORM " << i << ": " << uniformName << " size:" << uniformSize << std::endl;
+
+        if (j.count(uniformName) == 0) {
+            crash("missing JSON entry for uniform: %s", uniformName);
+        }
+        if (j.count(uniformName) > 1) {
+            crash("more than one JSON entry for uniform: %s", uniformName);
+        }
+        json uniformInfo = j[uniformName];
+
+        // Check presence of func and args entries
+        if (uniformInfo.find("func") == uniformInfo.end()) {
+            crash("malformed JSON: no 'func' entry for uniform: %s", uniformName);
+        }
+        if (uniformInfo.find("args") == uniformInfo.end()) {
+            crash("malformed JSON: no 'args' entry for uniform: %s", uniformName);
+        }
+
+        // Get uniform location
+        GLint uniformLocation = glGetUniformLocation(program, uniformName);
+        GL_CHECKERR("glGetUniformLocation");
+        if (uniformLocation == -1) {
+            crash("Cannot find uniform named: %s", uniformName);
+        }
+
+        // Dispatch to matching init function
+        std::string uniformFunc = uniformInfo["func"];
+        json args = uniformInfo["args"];
+
+        // TODO: check that args has the good number of fields and type
+
+        if (uniformFunc == "glUniform1f") {
+            glUniform1f(uniformLocation, args[0]);
+        } else if (uniformFunc == "glUniform2f") {
+            glUniform2f(uniformLocation, args[0], args[1]);
+        } else if (uniformFunc == "glUniform3f") {
+            glUniform3f(uniformLocation, args[0], args[1], args[2]);
+        } else if (uniformFunc == "glUniform4f") {
+            glUniform4f(uniformLocation, args[0], args[1], args[2], args[3]);
+        }
+
+        else if (uniformFunc == "glUniform1i") {
+            glUniform1i(uniformLocation, args[0]);
+        } else if (uniformFunc == "glUniform2i") {
+            glUniform2i(uniformLocation, args[0], args[1]);
+        } else if (uniformFunc == "glUniform3i") {
+            glUniform3i(uniformLocation, args[0], args[1], args[2]);
+        } else if (uniformFunc == "glUniform4i") {
+            glUniform4i(uniformLocation, args[0], args[1], args[2], args[3]);
+        }
+
+        // Note: GLES does not provide glUniformXui primitives
+#ifndef GL_VERSION_ES_CM_1_0
+
+        else if (uniformFunc == "glUniform1ui") {
+          glUniform1ui(uniformLocation, args[0]);
+        } else if (uniformFunc == "glUniform2ui") {
+          glUniform2ui(uniformLocation, args[0], args[1]);
+        } else if (uniformFunc == "glUniform3ui") {
+          glUniform3ui(uniformLocation, args[0], args[1], args[2]);
+        } else if (uniformFunc == "glUniform4ui") {
+          glUniform4ui(uniformLocation, args[0], args[1], args[2], args[3]);
+        }
+
+#endif // ifndef GL_VERSION_ES_CM_1_0
+
+        else if (uniformFunc == "glUniform1fv") {
+            GLUNIFORM_ARRAYINIT(glUniform1fv, uniformLocation, GLfloat, args);
+        } else if (uniformFunc == "glUniform2fv") {
+            GLUNIFORM_ARRAYINIT(glUniform2fv, uniformLocation, GLfloat, args);
+        } else if (uniformFunc == "glUniform3fv") {
+            GLUNIFORM_ARRAYINIT(glUniform3fv, uniformLocation, GLfloat, args);
+        } else if (uniformFunc == "glUniform4fv") {
+            GLUNIFORM_ARRAYINIT(glUniform4fv, uniformLocation, GLfloat, args);
+        }
+
+        else if (uniformFunc == "glUniform1iv") {
+            GLUNIFORM_ARRAYINIT(glUniform1iv, uniformLocation, GLint, args);
+        } else if (uniformFunc == "glUniform2iv") {
+            GLUNIFORM_ARRAYINIT(glUniform2iv, uniformLocation, GLint, args);
+        } else if (uniformFunc == "glUniform3iv") {
+            GLUNIFORM_ARRAYINIT(glUniform3iv, uniformLocation, GLint, args);
+        } else if (uniformFunc == "glUniform4iv") {
+            GLUNIFORM_ARRAYINIT(glUniform4iv, uniformLocation, GLint, args);
+        }
+
+        else {
+            crash("unknown/unsupported uniform init func: %s", uniformFunc);
+        }
+        GL_CHECKERR(uniformFunc.c_str());
+    }
+
+    delete [] uniformName;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -258,6 +451,8 @@ int main(int argc, char* argv[])
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glVertexAttribPointer((GLuint) vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
+
+    setUniformsJSON(program, fragFilename, params);
 
     GL_SAFECALL(glViewport, 0, 0, params.width, params.height);
     GL_SAFECALL(glClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
