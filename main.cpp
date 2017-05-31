@@ -22,6 +22,7 @@ static void defaultParams(Params& params) {
     params.fragFilename = "";
     params.output = "output.png";
     params.exitCompile = false;
+    params.exitLinking = false;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -32,8 +33,10 @@ static void setParams(Params& params, int argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         std::string arg = std::string(argv[i]);
         if (arg.compare(0, 2, "--") == 0) {
-            if (arg == "--exit-compile") {
+            if        (arg == "--exit-compile") {
                 params.exitCompile = true;
+            } else if (arg == "--exit-linking") {
+                params.exitLinking = true;
             } else {
                 crash("Invalid option: %s", argv[i]);
             }
@@ -371,6 +374,7 @@ void openglRender(const Params& params, const std::string& fragContents) {
     GL_SAFECALL(glAttachShader, program, fragmentShader);
 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    GL_CHECKERR("glCreateShader");
     std::string vertContents;
     generateVertexShader(vertContents, params);
     temp = vertContents.c_str();
@@ -389,6 +393,10 @@ void openglRender(const Params& params, const std::string& fragContents) {
     if (!status) {
         printProgramError(program);
         crash("glLinkProgram()");
+    }
+
+    if (params.exitLinking) {
+        exit(EXIT_SUCCESS);
     }
 
     GLint vertPosLoc = glGetAttribLocation(program, "_GLF_vertexPosition");

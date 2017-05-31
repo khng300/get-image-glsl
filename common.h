@@ -14,6 +14,7 @@ typedef struct {
     std::string fragFilename;
     std::string output;
     bool exitCompile;
+    bool exitLinking;
 } Params;
 
 /*---------------------------------------------------------------------------*/
