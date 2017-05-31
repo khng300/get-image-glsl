@@ -12,4 +12,22 @@
 #error Must define a context preprocessor macro!
 #endif
 
+/*---------------------------------------------------------------------------*/
+
+#define GL_CHECKERR(strfunc) do {                       \
+        GLenum __err = glGetError();                    \
+        if (__err != GL_NO_ERROR) {                     \
+            crash("OpenGL failure on: %s()" , strfunc); \
+        }                                               \
+    } while (0)
+
+/*---------------------------------------------------------------------------*/
+
+#define GL_SAFECALL(func, ...) do  {                    \
+        func(__VA_ARGS__);                              \
+        GL_CHECKERR(#func);                             \
+    } while (0)
+
+/*---------------------------------------------------------------------------*/
+
 #endif

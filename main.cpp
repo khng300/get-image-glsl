@@ -26,22 +26,6 @@ static void defaultParams(Params& params) {
 // Helpers
 /*---------------------------------------------------------------------------*/
 
-#define GL_CHECKERR(strfunc) do {                       \
-        GLenum __err = glGetError();                    \
-        if (__err != GL_NO_ERROR) {                     \
-            crash("OpenGL failure on: %s()" , strfunc); \
-        }                                               \
-    } while (0)
-
-/*---------------------------------------------------------------------------*/
-
-#define GL_SAFECALL(func, ...) do  {                    \
-        func(__VA_ARGS__);                              \
-        GL_CHECKERR(#func);                             \
-    } while (0)
-
-/*---------------------------------------------------------------------------*/
-
 bool isFile(std::string filename) {
     std::ifstream ifs(filename.c_str());
     return ifs.good();
