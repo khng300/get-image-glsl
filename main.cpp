@@ -28,6 +28,26 @@ static void defaultParams(Params& params) {
 
 /*---------------------------------------------------------------------------*/
 
+static void usage(char *name) {
+    std::cout << "Usage: " << name << "[options] shader.frag" << std::endl;
+    std::cout << "Options are:" << std::endl;
+
+    const char *options[] = {
+        "--exit-compile", "exit after compilation",
+        "--exit-linking", "exit after linking",
+        "--output <file.png>", "set PNG output file name",
+        "--resolution <width> <height>", "set resolution, in Pixels",
+        "--vertex <shader.vert>", "use a specific vertex shader",
+    };
+
+    for (int i = 0; i < (sizeof(options) / sizeof(*options)); i++) {
+        printf("  %-34.34s %s\n", options[i], options[i+1]);
+        i++;
+    }
+}
+
+/*---------------------------------------------------------------------------*/
+
 static void setParams(Params& params, int argc, char *argv[]) {
     defaultParams(params);
 
@@ -39,10 +59,17 @@ static void setParams(Params& params, int argc, char *argv[]) {
             } else if (arg == "--exit-linking") {
                 params.exitLinking = true;
             } else if (arg == "--output") {
+                if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--output"); }
                 params.output = argv[++i];
+            } else if (arg == "--resolution") {
+                if ((i + 2) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--resolution"); }
+                params.width = atoi(argv[++i]);
+                params.height = atoi(argv[++i]);
             } else if (arg == "--vertex") {
+                if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--vertex"); }
                 params.vertFilename = argv[++i];
             } else {
+                usage(argv[0]);
                 crash("Invalid option: %s", argv[i]);
             }
             continue;
@@ -50,6 +77,7 @@ static void setParams(Params& params, int argc, char *argv[]) {
         if (params.fragFilename == "") {
             params.fragFilename = arg;
         } else {
+            usage(argv[0]);
             crash("Unexpected extra argument: %s", arg.c_str());
         }
     }
