@@ -35,9 +35,9 @@ static void usage(char *name) {
     const char *options[] = {
         "--exit-compile", "exit after compilation",
         "--exit-linking", "exit after linking",
-        "--output <file.png>", "set PNG output file name",
+        "--output file.png", "set PNG output file name",
         "--resolution <width> <height>", "set resolution, in Pixels",
-        "--vertex <shader.vert>", "use a specific vertex shader",
+        "--vertex shader.vert", "use a specific vertex shader",
     };
 
     for (int i = 0; i < (sizeof(options) / sizeof(*options)); i++) {
@@ -80,6 +80,11 @@ static void setParams(Params& params, int argc, char *argv[]) {
             usage(argv[0]);
             crash("Unexpected extra argument: %s", arg.c_str());
         }
+    }
+
+    if (params.fragFilename == "") {
+        usage(argv[0]);
+        crash("Missing fragment shader argument");
     }
 }
 
