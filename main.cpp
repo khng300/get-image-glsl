@@ -466,7 +466,7 @@ void openglRender(const Params& params, const std::string& fragContents) {
 
     GLint vertPosLocInt = glGetAttribLocation(program, "_GLF_vertexPosition");
     GL_CHECKERR("glGetAttribLocation");
-    if (vertPosLoc == -1) {
+    if (vertPosLocInt == -1) {
         crash("Cannot find position of _GLF_vertexPosition");
     }
     GLuint vertPosLoc = (GLuint) vertPosLocInt;
