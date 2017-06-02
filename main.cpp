@@ -464,13 +464,14 @@ void openglRender(const Params& params, const std::string& fragContents) {
         exit(EXIT_SUCCESS);
     }
 
-    GLint vertPosLoc = glGetAttribLocation(program, "_GLF_vertexPosition");
+    GLint vertPosLocInt = glGetAttribLocation(program, "_GLF_vertexPosition");
     GL_CHECKERR("glGetAttribLocation");
     if (vertPosLoc == -1) {
         crash("Cannot find position of _GLF_vertexPosition");
     }
-    GL_SAFECALL(glEnableVertexAttribArray, (GLuint) vertPosLoc);
-    GL_SAFECALL(glVertexAttribPointer, (GLuint) vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    GLuint vertPosLoc = (GLuint) vertPosLocInt;
+    GL_SAFECALL(glEnableVertexAttribArray, vertPosLoc);
+    GL_SAFECALL(glVertexAttribPointer, vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
     GL_SAFECALL(glUseProgram, program);
     setUniformsJSON(program, params);
