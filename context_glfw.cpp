@@ -14,7 +14,12 @@ void context_init(const Params& params, Context& ctx) {
         crash("%s", "glfwInit()");
     }
 
-    // TODO: here, try OpenGL ES API
+    // TODO: Must request GLFW_OPENGL_ANY_PROFILE for profiles below
+    // 3.2, but we could request core / compat depending on the version.
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+
+    // TODO: here, try OpenGL ES API depending on the version?
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 
     int major = params.version / 100;
