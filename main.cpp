@@ -40,7 +40,7 @@ static void usage(char *name) {
         "--vertex shader.vert", "use a specific vertex shader",
     };
 
-    for (int i = 0; i < (sizeof(options) / sizeof(*options)); i++) {
+    for (unsigned i = 0; i < (sizeof(options) / sizeof(*options)); i++) {
         printf("  %-34.34s %s\n", options[i], options[i+1]);
         i++;
     }
