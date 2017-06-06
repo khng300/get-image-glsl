@@ -29,7 +29,7 @@ static void defaultParams(Params& params) {
 /*---------------------------------------------------------------------------*/
 
 static void usage(char *name) {
-    std::cout << "Usage: " << name << "[options] shader.frag" << std::endl;
+    std::cout << "Usage: " << name << " [options] shader.frag" << std::endl;
     std::cout << "Options are:" << std::endl;
 
     const char *options[] = {

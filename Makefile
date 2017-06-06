@@ -1,5 +1,5 @@
 CXX=g++
-CFLAGS=-g
+CFLAGS=-g -Wall
 
 EGL_INCLUDE=-I.
 EGL_LDFLAGS=-lEGL -lGLESv2
