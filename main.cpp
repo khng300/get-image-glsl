@@ -43,7 +43,6 @@ static void usage(char *name) {
         "initialisations. If no JSON file is found, the program uses default\n"
         "values for some uniforms.\n"
         ;
-
     std::cout << msg;
     std::cout << std::endl;
 
@@ -439,7 +438,7 @@ void openglRender(const Params& params, const std::string& fragContents) {
     GL_SAFECALL(glGetShaderiv, vertexShader, GL_COMPILE_STATUS, &status);
     if (!status) {
         printShaderError(vertexShader);
-        crash("Vertex shader compilation failed");
+        errcode_crash(COMPILE_ERROR_EXIT_CODE, "Vertex shader compilation failed (%s)", params.fragFilename.c_str());
     }
 
     GLuint program = glCreateProgram();
@@ -453,7 +452,7 @@ void openglRender(const Params& params, const std::string& fragContents) {
     GL_SAFECALL(glGetProgramiv, program, GL_LINK_STATUS, &status);
     if (!status) {
         printProgramError(program);
-        crash("glLinkProgram()");
+        errcode_crash(LINK_ERROR_EXIT_CODE, "Program linking failed");
     }
     if (params.exitLinking) {
         exit(EXIT_SUCCESS);
