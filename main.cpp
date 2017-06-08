@@ -11,6 +11,11 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
+// These codes reflect the ones used in 'get-image-glfw' (older version)
+#define COMPILE_ERROR_EXIT_CODE (101)
+#define LINK_ERROR_EXIT_CODE (102)
+#define RENDER_ERROR_EXIT_CODE (103)
+
 /*---------------------------------------------------------------------------*/
 // Parameters, argument parsing
 /*---------------------------------------------------------------------------*/
@@ -418,7 +423,7 @@ void openglRender(const Params& params, const std::string& fragContents) {
     GL_SAFECALL(glGetShaderiv, fragmentShader, GL_COMPILE_STATUS, &status);
     if (!status) {
         printShaderError(fragmentShader);
-        crash("Fragment shader compilation failed (%s)", params.fragFilename.c_str());
+        errcode_crash(COMPILE_ERROR_EXIT_CODE, "Fragment shader compilation failed (%s)", params.fragFilename.c_str());
     }
     if (params.exitCompile) {
         exit(EXIT_SUCCESS);
