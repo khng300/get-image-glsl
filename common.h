@@ -20,7 +20,19 @@ typedef struct {
 
 /*---------------------------------------------------------------------------*/
 
-#define crash(fmt, ...) do {                                            \
+#define errcode_crash(errcode, fmt, ...) do {                           \
+        printf("%s:%d (%s) ERROR: ", __FILE__, __LINE__, __func__);     \
+        printf(fmt, ##__VA_ARGS__);                                     \
+        printf("\n");                                                   \
+        exit (errcode);                                                 \
+    } while (0)
+
+/*---------------------------------------------------------------------------*/
+
+// Hugues: we should just call errcode_crash(EXIT_FAILURE, fmt,
+// __VA_ARGS__), but compiler complains.
+
+#define crash(fmt, ...) do {                           \
         printf("%s:%d (%s) ERROR: ", __FILE__, __LINE__, __func__);     \
         printf(fmt, ##__VA_ARGS__);                                     \
         printf("\n");                                                   \
