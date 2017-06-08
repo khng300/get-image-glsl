@@ -10,6 +10,12 @@ without any arguments, it should list its options.
 
 ```
 Usage: ./get_image_<egl/glfw> [options] shader.frag
+
+The program will look for a JSON whose name is derived from the
+shader as '<shader>.json'. This JSON file can contain uniforms
+initialisations. If no JSON file is found, the program uses default
+values for some uniforms.
+
 Options are:
   --exit-compile                     exit after compilation
   --exit-linking                     exit after linking

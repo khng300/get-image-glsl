@@ -29,7 +29,19 @@ static void defaultParams(Params& params) {
 /*---------------------------------------------------------------------------*/
 
 static void usage(char *name) {
-    std::cout << "Usage: " << name << " [options] shader.frag" << std::endl;
+    std::cout << "Usage: " << name << " [options] <shader>.frag" << std::endl;
+    std::cout << std::endl;
+
+    const char *msg =
+        "The program will look for a JSON whose name is derived from the\n"
+        "shader as '<shader>.json'. This JSON file can contain uniforms\n"
+        "initialisations. If no JSON file is found, the program uses default\n"
+        "values for some uniforms.\n"
+        ;
+
+    std::cout << msg;
+    std::cout << std::endl;
+
     std::cout << "Options are:" << std::endl;
 
     const char *options[] = {
