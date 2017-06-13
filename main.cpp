@@ -11,10 +11,9 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
-// These codes reflect the ones used in 'get-image-glfw' (older version)
+// These codes mimic the ones used in 'get-image-glfw'
 #define COMPILE_ERROR_EXIT_CODE (101)
 #define LINK_ERROR_EXIT_CODE (102)
-#define RENDER_ERROR_EXIT_CODE (103)
 
 /*---------------------------------------------------------------------------*/
 // Parameters, argument parsing
@@ -46,7 +45,7 @@ static void usage(char *name) {
     std::cout << msg;
     std::cout << std::endl;
 
-    std::cout << "Options are:" << std::endl;
+    std::cout << "Options:" << std::endl;
 
     const char *options[] = {
         "--exit-compile", "exit after compilation",
@@ -60,6 +59,23 @@ static void usage(char *name) {
         printf("  %-34.34s %s\n", options[i], options[i+1]);
         i++;
     }
+
+    std::cout << std::endl;
+    std::cout << "Return values:" << std::endl;
+
+    const char *errcode[] = {
+        "0", "Successful rendering",
+        "1", "Error",
+        "101", "Shader compilation error (either fragment or vertex)",
+        "102", "Shader linking error",
+    };
+
+    for (unsigned i = 0; i < (sizeof(errcode) / sizeof(*errcode)); i++) {
+        printf("  %-4.4s %s\n", errcode[i], errcode[i+1]);
+        i++;
+    }
+
+    std::cout << std::endl;
 }
 
 /*---------------------------------------------------------------------------*/

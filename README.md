@@ -22,6 +22,12 @@ Options are:
   --output file.png                  set PNG output file name
   --resolution <width> <height>      set resolution, in Pixels
   --vertex shader.vert               use a specific vertex shader
+
+Return values:
+  0    Successful rendering
+  1    Error
+  101  Shader compilation error (either fragment or vertex)
+  102  Shader linking error
 ```
 
 # Developer notes
