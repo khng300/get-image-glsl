@@ -285,6 +285,12 @@ void setUniformsJSON(const GLuint& program, const Params& params) {
     for (int i = 0; i < nbUniforms; i++) {
         GL_SAFECALL(glGetActiveUniform, program, i, uniformNameMaxLength, NULL, &uniformSize, &uniformType, uniformName);
 
+        // array name is '<name>[0]', sanitise it:
+        char *p = strchr(uniformName, '[');
+        if (p != NULL) {
+            *p = '\0';
+        }
+
         if (j.count(uniformName) == 0) {
             crash("missing JSON entry for uniform: %s", uniformName);
         }
