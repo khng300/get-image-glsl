@@ -34,7 +34,7 @@ Return values:
 
 ## TODO
 
-- raise specific error codes for some failures
+- add option to extract GPU assembly code
 
 ## Crash early!
 
