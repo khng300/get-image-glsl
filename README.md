@@ -36,6 +36,8 @@ Return values:
 
 - add option to extract GPU assembly code (see Andrei's code)
 
+- add option to display image, and to quit when any button is pressed
+
 ## Crash early!
 
 For any error, use the `crash()` macro defined in `common.h`. Do not

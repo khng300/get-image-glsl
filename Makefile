@@ -1,11 +1,11 @@
 CXX=g++
-CFLAGS=-g -Wall
+CFLAGS=-std=c++11 -g -Wall
 
 EGL_INCLUDE=-I.
 EGL_LDFLAGS=-lEGL -lGLESv2
 
-GLFW_INCLUDE=-I. -I include
-GLFW_LDFLAGS=-lglfw -ldl
+GLFW_INCLUDE=-I. -I include -I $(HOME)/work/glfw-3.2.1/include
+GLFW_LDFLAGS=-L $(HOME)/work/glfw-3.2.1/build/src -lglfw -ldl
 
 all: get_image_egl get_image_glfw
 
@@ -18,7 +18,7 @@ context_egl.o: context_egl.cpp
 
 # GLFW
 get_image_glfw: main.cpp lodepng.o context_glfw.o glad.o json.hpp
-	$(CXX) $(CFLAGS) -DGETIMAGE_CONTEXT=CONTEXT_GLFW -o $@ $(GLFW_INCLUDE) $(GLFW_LDFLAGS) $+
+	$(CXX) $(CFLAGS) -DGETIMAGE_CONTEXT=CONTEXT_GLFW -o $@ $(GLFW_INCLUDE) $+ $(GLFW_LDFLAGS)
 
 context_glfw.o: context_glfw.cpp
 	$(CXX) $(CFLAGS) -c $(GLFW_INCLUDE) $?
