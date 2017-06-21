@@ -38,6 +38,6 @@ Return values:
 
 ## Crash early!
 
-For any error, use the crash() macro defined in `common.h`. Do not
+For any error, use the `crash()` macro defined in `common.h`. Do not
 hesitate to crash as soon as something goes wrong, rather than passing
 around return values.
