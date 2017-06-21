@@ -34,7 +34,7 @@ Return values:
 
 ## TODO
 
-- add option to extract GPU assembly code
+- add option to extract GPU assembly code (see Andrei's code)
 
 ## Crash early!
 
