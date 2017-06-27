@@ -34,9 +34,13 @@ Return values:
 
 ## TODO
 
+- test on windows, fix cmake accordingly (see get-image-glfw cmake config)
+
 - add option to extract GPU assembly code (see Andrei's code)
 
-- add option to display image, and to quit when any button is pressed
+- add option to display image (persistent), and to quit when any button is pressed
+
+- add option to force a particular opengl api version (with glfw)
 
 ## Crash early!
 
