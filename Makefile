@@ -11,7 +11,7 @@ all: get_image_egl get_image_glfw
 
 # EGL
 get_image_egl: main.cpp lodepng.o context_egl.o json.hpp
-	$(CXX) $(CFLAGS) -DGETIMAGE_CONTEXT=CONTEXT_EGL -o $@ $(EGL_INCLUDE) $(EGL_LDFLAGS) $+
+	$(CXX) $(CFLAGS) -DGETIMAGE_CONTEXT=CONTEXT_EGL -o $@ $(EGL_INCLUDE) $+ $(EGL_LDFLAGS)
 
 context_egl.o: context_egl.cpp
 	$(CXX) $(CFLAGS) -c $(EGL_INCLUDE) $?
