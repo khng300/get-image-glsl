@@ -606,13 +606,27 @@ int main(int argc, char* argv[])
     contextInit(params, context);
     openglInit(params, fragContents);
 
-    for (int i = 0; i < params.delay; i++) {
+    int numFrames = 0;
+    bool saved = false;
+
+    while (contextKeepLooping(context)) {
         openglRender(params, fragContents);
         contextSwap(context);
+        numFrames++;
+
+        if (numFrames == params.delay && !saved) {
+            savePNG(params);
+            saved = true;
+
+            if (params.persist) {
+                printf("Press any key to close the window...\n");
+                contextSetKeyCallback(context);
+            } else {
+                break;
+            }
+        }
     }
 
-    savePNG(params);
-    while(params.persist);
     contextTerminate(context);
     exit(EXIT_SUCCESS);
 }

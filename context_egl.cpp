@@ -72,8 +72,21 @@ void contextInit(const Params& params, Context& ctx) {
 
 /*---------------------------------------------------------------------------*/
 
+bool contextKeepLooping(Context &ctx) {
+    return true;
+}
+
+/*---------------------------------------------------------------------------*/
+
 void contextSwap(Context& ctx) {
     eglSwapBuffers(ctx.display, ctx.surface);
+}
+
+
+/*---------------------------------------------------------------------------*/
+
+void contextSetKeyCallback(Context& ctx) {
+    printf("Warning: no key callback support with EGL!\n");
 }
 
 /*---------------------------------------------------------------------------*/

@@ -41,9 +41,27 @@ void contextInit(const Params& params, Context& ctx) {
 
 /*---------------------------------------------------------------------------*/
 
+bool contextKeepLooping(Context &ctx) {
+    return !glfwWindowShouldClose(ctx.window);
+}
+
+/*---------------------------------------------------------------------------*/
+
 void contextSwap(Context& ctx) {
     glfwSwapBuffers(ctx.window);
     glfwPollEvents();
+}
+
+/*---------------------------------------------------------------------------*/
+
+static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    exit(EXIT_SUCCESS);
+}
+
+/*---------------------------------------------------------------------------*/
+
+void contextSetKeyCallback(Context& ctx) {
+    glfwSetKeyCallback(ctx.window, keyCallback);
 }
 
 /*---------------------------------------------------------------------------*/
