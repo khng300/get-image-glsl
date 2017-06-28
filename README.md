@@ -66,6 +66,8 @@ cd build
 
 - fix cmake scripts for EGL compilation
 
+- add CI
+
 ## Crash early!
 
 For any error, use the `crash()` macro defined in `common.h`. Do not
