@@ -51,7 +51,7 @@ static void usage(char *name) {
     std::cout << "Options:" << std::endl;
 
     const char *options[] = {
-        "--delay", "number of frames to render before capturing the image"
+        "--delay", "number of frames to render before capturing the image",
         "--exit-compile", "exit after compilation",
         "--exit-linking", "exit after linking",
         "--output file.png", "set PNG output file name",
