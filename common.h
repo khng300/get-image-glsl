@@ -18,6 +18,7 @@ typedef struct {
     bool exitCompile;
     bool exitLinking;
     bool persist;
+    std::string binOut;
 } Params;
 
 /*---------------------------------------------------------------------------*/
