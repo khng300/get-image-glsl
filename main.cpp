@@ -29,6 +29,7 @@ static void defaultParams(Params& params) {
     params.exitCompile = false;
     params.exitLinking = false;
     params.persist = false;
+    params.binOut = "";
 }
 
 /*---------------------------------------------------------------------------*/
@@ -54,6 +55,7 @@ static void usage(char *name) {
         "--output file.png", "set PNG output file name",
         "--resolution <width> <height>", "set resolution, in Pixels",
         "--vertex shader.vert", "use a specific vertex shader",
+	"--dump_bin <file>", "dump binary output to given file",
     };
 
     for (unsigned i = 0; i < (sizeof(options) / sizeof(*options)); i++) {
@@ -566,6 +568,20 @@ void savePNG(Params& params) {
 }
 
 /*---------------------------------------------------------------------------*/
+// BIN
+/*---------------------------------------------------------------------------*/
+
+void dumpBin(Params& params) {
+    char binary[GL_PROGRAM_BINARY_LENGTH];
+    GLenum format;
+    GLint length;
+    glGetProgramBinary(program, GL_PROGRAM_BINARY_LENGTH, &length, &format, &binary[0]);
+    std::ofstream binaryfile(params.binOut);
+    binaryfile.write(binary, length);
+    binaryfile.close();
+}
+
+/*---------------------------------------------------------------------------*/
 // Main
 /*---------------------------------------------------------------------------*/
 
@@ -583,9 +599,9 @@ int main(int argc, char* argv[])
     openglRender(params, fragContents);
     context_render(context);
     savePNG(params);
-
+    if(strcmp(params.binOut.c_str(), ""))
+        dumpBin(params);
     while(params.persist);
-
     context_terminate(context);
     exit(EXIT_SUCCESS);
 }
