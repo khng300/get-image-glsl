@@ -28,6 +28,7 @@ static void defaultParams(Params& params) {
     params.output = "output.png";
     params.exitCompile = false;
     params.exitLinking = false;
+    params.persist = false;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -90,6 +91,8 @@ static void setParams(Params& params, int argc, char *argv[]) {
                 params.exitCompile = true;
             } else if (arg == "--exit-linking") {
                 params.exitLinking = true;
+            } else if (arg == "--persist") {
+                params.persist = true;
             } else if (arg == "--output") {
                 if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--output"); }
                 params.output = argv[++i];
@@ -430,8 +433,7 @@ void printProgramError(GLuint program) {
 
 /*---------------------------------------------------------------------------*/
 
-void openglRender(const Params& params, const std::string& fragContents) {
-
+void openglInit(const Params& params, const std::string& fragContents) {
     const char *temp;
     GLint status = 0;
 
@@ -527,6 +529,11 @@ void openglRender(const Params& params, const std::string& fragContents) {
     setUniformsJSON(program, params);
 
     GL_SAFECALL(glViewport, 0, 0, params.width, params.height);
+}
+
+/*---------------------------------------------------------------------------*/
+
+void openglRender(const Params& params, const std::string& fragContents) {
     GL_SAFECALL(glClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
     GL_SAFECALL(glClear, GL_COLOR_BUFFER_BIT);
     GL_SAFECALL(glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
@@ -572,9 +579,13 @@ int main(int argc, char* argv[])
     readFile(fragContents, params.fragFilename);
     params.version = getVersion(fragContents);
     context_init(params, context);
+    openglInit(params, fragContents);
     openglRender(params, fragContents);
     context_render(context);
     savePNG(params);
+
+    while(params.persist);
+
     context_terminate(context);
     exit(EXIT_SUCCESS);
 }

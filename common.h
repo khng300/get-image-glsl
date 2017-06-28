@@ -16,6 +16,7 @@ typedef struct {
     std::string output;
     bool exitCompile;
     bool exitLinking;
+    bool persist;
 } Params;
 
 /*---------------------------------------------------------------------------*/

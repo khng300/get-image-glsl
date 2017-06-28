@@ -22,6 +22,7 @@ void context_init(const Params& params, Context& ctx) {
     // TODO: here, try OpenGL ES API depending on the version?
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 
+    // We use to ask for a specific OpenGL API version,
     int major = params.version / 100;
     int minor = (params.version % 100) / 10;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
