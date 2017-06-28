@@ -405,6 +405,16 @@ const char *opengl_error_string(GLenum err) {
     }
 }
 
+void dumpBin(const Params& params, GLuint program) {
+    char binary[GL_PROGRAM_BINARY_LENGTH];
+    GLenum format;
+    GLint length;
+    glGetProgramBinary(program, GL_PROGRAM_BINARY_LENGTH, &length, &format, &binary[0]);
+    std::ofstream binaryfile(params.binOut);
+    binaryfile.write(binary, length);
+    binaryfile.close();
+}
+
 /*---------------------------------------------------------------------------*/
 
 void printShaderError(GLuint shader) {
@@ -531,6 +541,9 @@ void openglInit(const Params& params, const std::string& fragContents) {
     setUniformsJSON(program, params);
 
     GL_SAFECALL(glViewport, 0, 0, params.width, params.height);
+
+    if(strcmp(params.binOut.c_str(), ""))
+        dumpBin(params, program);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -568,20 +581,6 @@ void savePNG(Params& params) {
 }
 
 /*---------------------------------------------------------------------------*/
-// BIN
-/*---------------------------------------------------------------------------*/
-
-void dumpBin(Params& params) {
-    char binary[GL_PROGRAM_BINARY_LENGTH];
-    GLenum format;
-    GLint length;
-    glGetProgramBinary(program, GL_PROGRAM_BINARY_LENGTH, &length, &format, &binary[0]);
-    std::ofstream binaryfile(params.binOut);
-    binaryfile.write(binary, length);
-    binaryfile.close();
-}
-
-/*---------------------------------------------------------------------------*/
 // Main
 /*---------------------------------------------------------------------------*/
 
@@ -599,8 +598,6 @@ int main(int argc, char* argv[])
     openglRender(params, fragContents);
     context_render(context);
     savePNG(params);
-    if(strcmp(params.binOut.c_str(), ""))
-        dumpBin(params);
     while(params.persist);
     context_terminate(context);
     exit(EXIT_SUCCESS);
