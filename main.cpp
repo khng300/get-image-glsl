@@ -110,6 +110,9 @@ static void setParams(Params& params, int argc, char *argv[]) {
             } else if (arg == "--vertex") {
                 if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--vertex"); }
                 params.vertFilename = argv[++i];
+            } else if (arg == "--dump_bin") {
+                if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--dump_bin"); }
+                params.binOut = argv[++i];
             } else {
                 usage(argv[0]);
                 crash("Invalid option: %s", argv[i]);
