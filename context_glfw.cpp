@@ -6,7 +6,7 @@ static void errorCallback(int error, const char* description) {
 
 /*---------------------------------------------------------------------------*/
 
-void context_init(const Params& params, Context& ctx) {
+void contextInit(const Params& params, Context& ctx) {
 
     glfwSetErrorCallback(errorCallback);
 
@@ -41,14 +41,14 @@ void context_init(const Params& params, Context& ctx) {
 
 /*---------------------------------------------------------------------------*/
 
-void context_render(Context& ctx) {
+void contextSwap(Context& ctx) {
     glfwSwapBuffers(ctx.window);
     glfwPollEvents();
 }
 
 /*---------------------------------------------------------------------------*/
 
-void context_terminate(Context& ctx) {
+void contextTerminate(Context& ctx) {
     glfwDestroyWindow(ctx.window);
     glfwTerminate();
 }

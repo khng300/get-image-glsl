@@ -2,7 +2,7 @@
 
 /*---------------------------------------------------------------------------*/
 
-void context_init(const Params& params, Context& ctx) {
+void contextInit(const Params& params, Context& ctx) {
 
     EGLDisplay& display = ctx.display;
     EGLConfig& config = ctx.config;
@@ -72,13 +72,13 @@ void context_init(const Params& params, Context& ctx) {
 
 /*---------------------------------------------------------------------------*/
 
-void context_render(Context& ctx) {
+void contextSwap(Context& ctx) {
     eglSwapBuffers(ctx.display, ctx.surface);
 }
 
 /*---------------------------------------------------------------------------*/
 
-void context_terminate(Context& ctx) {
+void contextTerminate(Context& ctx) {
     eglTerminate(ctx.display);
 }
 

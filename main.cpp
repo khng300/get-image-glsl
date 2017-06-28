@@ -398,7 +398,7 @@ void setUniformsJSON(const GLuint& program, const Params& params) {
 // OpenGL
 /*---------------------------------------------------------------------------*/
 
-const char *opengl_error_string(GLenum err) {
+const char *openglErrorString(GLenum err) {
     switch (err) {
     case GL_INVALID_ENUM: return "GL_INVALID_ENUM";
     case GL_INVALID_VALUE: return "GL_INVALID_VALUE";
@@ -409,6 +409,8 @@ const char *opengl_error_string(GLenum err) {
     default: return "UNKNOW_ERROR";
     }
 }
+
+/*---------------------------------------------------------------------------*/
 
 void dumpBin(const Params& params, GLuint program) {
     char binary[GL_PROGRAM_BINARY_LENGTH];
@@ -598,17 +600,17 @@ int main(int argc, char* argv[])
     setParams(params, argc, argv);
     readFile(fragContents, params.fragFilename);
     params.version = getVersion(fragContents);
-    context_init(params, context);
+    contextInit(params, context);
     openglInit(params, fragContents);
 
     for (int i = 0; i < params.delay; i++) {
         openglRender(params, fragContents);
-        context_render(context);
+        contextSwap(context);
     }
 
     savePNG(params);
     while(params.persist);
-    context_terminate(context);
+    contextTerminate(context);
     exit(EXIT_SUCCESS);
 }
 
