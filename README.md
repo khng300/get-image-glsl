@@ -42,6 +42,8 @@ Return values:
 
 - add option to force a particular opengl api version (with glfw)
 
+- command line option like resolution should take over json config
+
 ## Crash early!
 
 For any error, use the `crash()` macro defined in `common.h`. Do not
