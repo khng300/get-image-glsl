@@ -17,11 +17,13 @@ initialisations. If no JSON file is found, the program uses default
 values for some uniforms.
 
 Options are:
+  --delay                            number of frames before PNG capture
   --exit-compile                     exit after compilation
   --exit-linking                     exit after linking
   --output file.png                  set PNG output file name
   --resolution <width> <height>      set resolution, in Pixels
   --vertex shader.vert               use a specific vertex shader
+  --dump_bin <file>                  dump binary output to given file
 
 Return values:
   0    Successful rendering
@@ -34,15 +36,7 @@ Return values:
 
 ## TODO
 
-- test on windows, fix cmake accordingly (see get-image-glfw cmake config)
-
-- add option to extract GPU assembly code (see Andrei's code)
-
-- add option to display image (persistent), and to quit when any button is pressed
-
 - add option to force a particular opengl api version (with glfw)
-
-- command line option like resolution should take over json config
 
 ## Crash early!
 
