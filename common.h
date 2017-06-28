@@ -11,6 +11,7 @@ typedef struct {
     int width;
     int height;
     int version;
+    int delay;
     std::string fragFilename;
     std::string vertFilename;
     std::string output;

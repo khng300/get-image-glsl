@@ -29,6 +29,7 @@ static void defaultParams(Params& params) {
     params.exitCompile = false;
     params.exitLinking = false;
     params.persist = false;
+    params.delay = 2;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -49,6 +50,7 @@ static void usage(char *name) {
     std::cout << "Options:" << std::endl;
 
     const char *options[] = {
+        "--delay", "number of frames to render before capturing the image"
         "--exit-compile", "exit after compilation",
         "--exit-linking", "exit after linking",
         "--output file.png", "set PNG output file name",
@@ -93,6 +95,9 @@ static void setParams(Params& params, int argc, char *argv[]) {
                 params.exitLinking = true;
             } else if (arg == "--persist") {
                 params.persist = true;
+            } else if (arg == "--delay") {
+                if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--delay"); }
+                params.delay = atoi(argv[++i]);
             } else if (arg == "--output") {
                 if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--output"); }
                 params.output = argv[++i];
@@ -580,8 +585,12 @@ int main(int argc, char* argv[])
     params.version = getVersion(fragContents);
     context_init(params, context);
     openglInit(params, fragContents);
-    openglRender(params, fragContents);
-    context_render(context);
+
+    for (int i = 0; i < params.delay; i++) {
+        openglRender(params, fragContents);
+        context_render(context);
+    }
+
     savePNG(params);
 
     while(params.persist);
