@@ -1,7 +1,8 @@
 # get-image-glsl
 
 This program renders a fragment shader, it can be compiled with
-different context provider, currently EGL or GLFW.
+different context provider, currently EGL or GLFW. See build
+instructions below.
 
 # Usage
 
@@ -32,11 +33,38 @@ Return values:
   102  Shader linking error
 ```
 
+# Build
+
+## Linux
+
+Requirement: `cmake`. Use this script to build the glfw version (the
+script automatically download and install the glfw version for the
+build):
+
+```
+cd build
+./build-linux
+```
+
+Alternatively, if you already have glfw3 and egl installed, you can use
+the Makefile (just call `make`).
+
+## Windows
+
+Only GLFW build is supported, on Linux host. Use this script:
+
+```
+cd build
+./build-x86_64-w64-mingw32
+```
+
 # Developer notes
 
 ## TODO
 
 - add option to force a particular opengl api version (with glfw)
+
+- fix cmake scripts for EGL compilation
 
 ## Crash early!
 
