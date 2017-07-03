@@ -22,7 +22,7 @@ Options are:
   --exit-compile                     exit after compilation
   --exit-linking                     exit after linking
   --output file.png                  set PNG output file name
-  --resolution <width> <height>      set resolution, in Pixels
+  --resolution <width> <height>      set viewport resolution, in Pixels
   --vertex shader.vert               use a specific vertex shader
   --dump_bin <file>                  dump binary output to given file
 

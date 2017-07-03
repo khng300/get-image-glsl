@@ -55,7 +55,7 @@ static void usage(char *name) {
         "--exit-compile", "exit after compilation",
         "--exit-linking", "exit after linking",
         "--output file.png", "set PNG output file name",
-        "--resolution <width> <height>", "set resolution, in Pixels",
+        "--resolution <width> <height>", "set viewport resolution, in Pixels",
         "--vertex shader.vert", "use a specific vertex shader",
 	"--dump_bin <file>", "dump binary output to given file",
     };
@@ -284,10 +284,10 @@ void setUniformsJSON(const GLuint& program, const Params& params) {
         readFile(jsonContent, jsonFilename);
         j = json::parse(jsonContent);
     } else {
+        // If and only if no JSON file, use the defaults
         std::cerr << "Warning: file '" << jsonFilename << "' not found, will rely on default uniform values only" << std::endl;
+        setJSONDefaultEntries(j, params);
     }
-
-    setJSONDefaultEntries(j, params);
 
     GLint uniformNameMaxLength = 0;
     GL_SAFECALL(glGetProgramiv, program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &uniformNameMaxLength);
