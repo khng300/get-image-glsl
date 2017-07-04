@@ -416,10 +416,11 @@ const char *openglErrorString(GLenum err) {
 /*---------------------------------------------------------------------------*/
 
 void dumpBin(const Params& params, GLuint program) {
-    char binary[GL_PROGRAM_BINARY_LENGTH];
-    GLenum format;
     GLint length;
-    glGetProgramBinary(program, GL_PROGRAM_BINARY_LENGTH, &length, &format, &binary[0]);
+    GL_SAFECALL(glGetProgramiv, program, GL_PROGRAM_BINARY_LENGTH, &length);
+    char binary[length];
+    GLenum format;
+    GL_SAFECALL(glGetProgramBinary, program, length, NULL, &format, &binary[0]);
     std::ofstream binaryfile(params.binOut);
     binaryfile.write(binary, length);
     binaryfile.close();
@@ -488,6 +489,7 @@ void openglInit(const Params& params, const std::string& fragContents) {
     }
 
     GLuint program = glCreateProgram();
+    GL_SAFECALL(glProgramParameteri, program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
     GL_CHECKERR("glCreateProgram");
     if (program == 0) {
         crash("glCreateProgram()");
@@ -558,7 +560,7 @@ void openglInit(const Params& params, const std::string& fragContents) {
 
 /*---------------------------------------------------------------------------*/
 
-void openglRender(const Params& params, const std::string& fragContents) {
+void openglRender(const Params& params) {
     GL_SAFECALL(glClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
     GL_SAFECALL(glClear, GL_COLOR_BUFFER_BIT);
     GL_SAFECALL(glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
