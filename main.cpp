@@ -612,7 +612,7 @@ int main(int argc, char* argv[])
     bool saved = false;
 
     while (contextKeepLooping(context)) {
-        openglRender(params, fragContents);
+        openglRender(params);
         contextSwap(context);
         numFrames++;
 
