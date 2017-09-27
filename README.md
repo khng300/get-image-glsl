@@ -51,12 +51,16 @@ the Makefile (just call `make`).
 
 ## Windows
 
-Only GLFW build is supported, on Linux host. Use this script:
+Only GLFW build is supported, build is done via cygwin with mingw32.
+Use this script:
 
 ```
 cd build
 ./build-x86_64-w64-mingw32
 ```
+
+This script should also be able to cross-build for Windows from a Linux
+host with mingw32.
 
 # Developer notes
 
