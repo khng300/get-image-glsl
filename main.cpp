@@ -418,7 +418,10 @@ const char *openglErrorString(GLenum err) {
 void dumpBin(const Params& params, GLuint program) {
     GLint length;
     GL_SAFECALL(glGetProgramiv, program, GL_PROGRAM_BINARY_LENGTH, &length);
-    char binary[length];
+    char *binary = (char *) malloc(length);
+    if (binary == NULL) {
+        crash("malloc failed");
+    }
     GLenum format;
     GL_SAFECALL(glGetProgramBinary, program, length, NULL, &format, &binary[0]);
     std::ofstream binaryfile(params.binOut);
