@@ -5,11 +5,6 @@ env:
   global:
     - CMAKE_GENERATOR="Unix Makefiles" CMAKE_OPTIONS=" "
 
-language: cpp
-
-compiler:
-  - gcc
-
 matrix:
   include:
     - os: linux
