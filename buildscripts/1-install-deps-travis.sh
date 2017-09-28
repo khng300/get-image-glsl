@@ -17,7 +17,7 @@ fi
 if [ "$(uname)" == "Linux" ];
 then
   GITHUB_RELEASE_TOOL_ARCH="linux_amd64"
-  sudo apt-get -y install g++ libxrandr-dev libxinerama-dev libxcursor-dev libgl1-mesa-dev cmake zip git
+  sudo apt-get -y install libxrandr-dev libxinerama-dev libxcursor-dev libgl1-mesa-dev cmake zip git
 
   # The JSON library requires GCC >= 4.9
   sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y;
