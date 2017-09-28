@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/4mbuu9dkx83xbwii/branch/master?svg=true)](https://ci.appveyor.com/project/hevrard/get-image-glsl/branch/master)
+
 # get-image-glsl
 
 This program renders a fragment shader, it can be compiled with
