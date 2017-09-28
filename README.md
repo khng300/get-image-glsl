@@ -77,3 +77,13 @@ host with mingw32.
 For any error, use the `crash()` macro defined in `common.h`. Do not
 hesitate to crash as soon as something goes wrong, rather than passing
 around return values.
+
+## CI
+
+ - Windows: See `appveyor.yml` and the corresponding scripts under
+   `buildscripts/`
+
+There is a dependency on:
+
+    # see buildscripts/1-install-deps-appveyor.sh
+    https://github.com/paulthomson/github-release
