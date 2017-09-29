@@ -57,7 +57,7 @@ static void usage(char *name) {
         "--output file.png", "set PNG output file name",
         "--resolution <width> <height>", "set viewport resolution, in Pixels",
         "--vertex shader.vert", "use a specific vertex shader",
-	"--dump_bin <file>", "dump binary output to given file",
+	"--dump_bin <file>", "dump binary output to given file (requires OpenGL >= 4.1, OpenGLES >= 3.0)",
     };
 
     for (unsigned i = 0; i < (sizeof(options) / sizeof(*options)); i++) {
@@ -416,6 +416,12 @@ const char *openglErrorString(GLenum err) {
 /*---------------------------------------------------------------------------*/
 
 void dumpBin(const Params& params, GLuint program) {
+    if (! (params.version >= 410 || params.version == 300)) {
+        printf("Cannot dump binary:"
+               " requires OpenGL >= 4.1 or OpenGLES >= 3.0,"
+               " current version is: %d\n", params.version);
+        return;
+    }
     GLint length;
     GL_SAFECALL(glGetProgramiv, program, GL_PROGRAM_BINARY_LENGTH, &length);
     char *binary = (char *) malloc(length);
@@ -492,7 +498,9 @@ void openglInit(const Params& params, const std::string& fragContents) {
     }
 
     GLuint program = glCreateProgram();
-    GL_SAFECALL(glProgramParameteri, program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+    if (params.version >= 410 || params.version == 300) {
+        GL_SAFECALL(glProgramParameteri, program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+    }
     GL_CHECKERR("glCreateProgram");
     if (program == 0) {
         crash("glCreateProgram()");
