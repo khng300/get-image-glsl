@@ -37,11 +37,22 @@ Return values:
 
 # Build
 
+The EGL version requires that you copy libEGL and libGLESv2 into `deps/`.
+See below for skipping the EGL version.
+
 ## Linux
 
-Requirement: `cmake`. Use this script to build the glfw version (the
-script automatically download and install the glfw version for the
-build):
+Using CMake manually:
+
+```cmd
+mkdir b
+cd b
+cmake -G "Unix Makefiles" .. -DCMAKE_BUILD_TYPE=Release
+cmake --build . --config Release
+cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_TYPE=Release -P cmake_install.cmake
+```
+
+Or, use the script.
 
 ```
 cd build
@@ -53,26 +64,37 @@ the Makefile (just call `make`).
 
 ## Windows
 
-Only GLFW build is supported, build is done via cygwin with mingw32.
-Use this script:
+Using CMake manually:
+
+```cmd
+mkdir b
+cd b
+cmake -G "Visual Studio 14 2015 Win64" .. -DCMAKE_BUILD_TYPE=Debug
+cmake --build . --config Debug
+cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_TYPE=Debug -P cmake_install.cmake
+```
+
+Or, use this cross-compilation script from Linux:
 
 ```
 cd build
 ./build-x86_64-w64-mingw32
 ```
 
-This script should also be able to cross-build for Windows from a Linux
-host with mingw32.
+## Skipping version
+
+Skip building certain versions as follows. E.g.
+
+```bash
+cmake -G "Unix Makefiles" .. -DBUILD_GLFW_VERSION=OFF -DBUILD_EGL_VERSION=OFF
+                               ^ (skip GLFW version)    ^ (skip EGL version)
+```
 
 # Developer notes
 
 ## TODO
 
 - add option to force a particular opengl api version (with glfw)
-
-- fix cmake scripts for EGL compilation
-
-- add CI
 
 ## Crash early!
 
