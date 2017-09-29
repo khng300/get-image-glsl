@@ -445,6 +445,13 @@ void dumpBin(const Params& params, GLuint program) {
         return;
     }
 
+    GLint num_formats;
+    GL_SAFECALL(glGetIntegerv, GL_NUM_PROGRAM_BINARY_FORMATS, &num_formats);
+    if (num_formats <= 0) {
+        printf("Cannot dump binary: driver supports zero binary format\n");
+        return;
+    }
+
     GLint length;
     GL_SAFECALL(glGetProgramiv, program, GL_PROGRAM_BINARY_LENGTH, &length);
     char *binary = (char *) malloc(length);
@@ -452,7 +459,7 @@ void dumpBin(const Params& params, GLuint program) {
         crash("malloc failed");
     }
     GLenum format;
-    GL_SAFECALL(glGetProgramBinary, program, length, NULL, &format, &binary[0]);
+    GL_SAFECALL(glGetProgramBinary, program, length, NULL, &format, (void *)binary);
     std::ofstream binaryfile(params.binOut);
     binaryfile.write(binary, length);
     binaryfile.close();
@@ -538,6 +545,11 @@ void openglInit(const Params& params, const std::string& fragContents) {
         printProgramError(program);
         errcode_crash(LINK_ERROR_EXIT_CODE, "Program linking failed");
     }
+
+    if(strcmp(params.binOut.c_str(), "")) {
+        dumpBin(params, program);
+    }
+
     if (params.exitLinking) {
         exit(EXIT_SUCCESS);
     }
@@ -589,9 +601,6 @@ void openglInit(const Params& params, const std::string& fragContents) {
     setUniformsJSON(program, params);
 
     GL_SAFECALL(glViewport, 0, 0, params.width, params.height);
-
-    if(strcmp(params.binOut.c_str(), ""))
-        dumpBin(params, program);
 }
 
 /*---------------------------------------------------------------------------*/
