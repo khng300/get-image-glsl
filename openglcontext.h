@@ -15,7 +15,7 @@
 /*---------------------------------------------------------------------------*/
 // Primitives all context should define
 
-void contextInit(const Params& params, Context& ctx);
+void contextInitAndGetAPI(Params& params, Context& ctx);
 bool contextKeepLooping(Context &ctx);
 void contextSwap(Context& ctx);
 void contextSetKeyCallback(Context& ctx);

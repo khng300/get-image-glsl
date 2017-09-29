@@ -1,5 +1,3 @@
-// TODO: decide of a clang-format
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -22,7 +20,8 @@ using json = nlohmann::json;
 static void defaultParams(Params& params) {
     params.width = 256;
     params.height = 256;
-    params.version = 0;
+    params.shaderVersion = 0;
+    params.APIVersion = 0;
     params.fragFilename = "";
     params.vertFilename = "";
     params.output = "output.png";
@@ -134,6 +133,25 @@ static void setParams(Params& params, int argc, char *argv[]) {
 }
 
 /*---------------------------------------------------------------------------*/
+
+void printAPI(const Params& params) {
+    switch (params.API) {
+    case API_OPENGL:
+        printf("OpenGL");
+        break;
+    case API_OPENGL_ES:
+        printf("OpenGLES");
+        break;
+    default:
+        crash("Invalid API value");
+    }
+
+    int major = params.APIVersion / 100;
+    int minor = (params.APIVersion % 100) / 10;
+    printf(" %d.%d", major, minor);
+}
+
+/*---------------------------------------------------------------------------*/
 // Helpers
 /*---------------------------------------------------------------------------*/
 
@@ -156,7 +174,7 @@ void readFile(std::string& contents, const std::string& filename) {
 
 /*---------------------------------------------------------------------------*/
 
-int getVersion(const std::string& fragContents) {
+int getShaderVersion(const std::string& fragContents) {
     size_t pos = fragContents.find('\n');
     if (pos == std::string::npos) {
         crash("cannot find end-of-line in fragment shader");
@@ -201,8 +219,8 @@ void generateVertexShader(std::string& out, const Params& params) {
     }
 
     std::stringstream ss;
-    ss << "#version " << params.version;
-    if (params.version == 300) {
+    ss << "#version " << params.shaderVersion;
+    if (params.shaderVersion == 300) {
         // Version 300 must have the "es" suffix, and qualifies the
         // _GLF_vertexPosition as "in" rather than "attribute"
         ss << " es" << std::endl << "in ";
@@ -416,12 +434,17 @@ const char *openglErrorString(GLenum err) {
 /*---------------------------------------------------------------------------*/
 
 void dumpBin(const Params& params, GLuint program) {
-    if (! (params.version >= 410 || params.version == 300)) {
+    int supported = ((params.API == API_OPENGL && params.APIVersion >= 410) ||
+                     (params.API == API_OPENGL_ES && params.APIVersion >= 300));
+    if (! supported) {
         printf("Cannot dump binary:"
                " requires OpenGL >= 4.1 or OpenGLES >= 3.0,"
-               " current version is: %d\n", params.version);
+               " current version is: ");
+        printAPI(params);
+        printf("\n");
         return;
     }
+
     GLint length;
     GL_SAFECALL(glGetProgramiv, program, GL_PROGRAM_BINARY_LENGTH, &length);
     char *binary = (char *) malloc(length);
@@ -498,7 +521,9 @@ void openglInit(const Params& params, const std::string& fragContents) {
     }
 
     GLuint program = glCreateProgram();
-    if (params.version >= 410 || params.version == 300) {
+    int supported = ((params.API == API_OPENGL && params.APIVersion >= 410) ||
+                     (params.API == API_OPENGL_ES && params.APIVersion >= 300));
+    if (supported) {
         GL_SAFECALL(glProgramParameteri, program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
     }
     GL_CHECKERR("glCreateProgram");
@@ -615,8 +640,9 @@ int main(int argc, char* argv[])
 
     setParams(params, argc, argv);
     readFile(fragContents, params.fragFilename);
-    params.version = getVersion(fragContents);
-    contextInit(params, context);
+    params.shaderVersion = getShaderVersion(fragContents);
+    contextInitAndGetAPI(params, context);
+    printf("API version: %d\n", params.APIVersion);
     openglInit(params, fragContents);
 
     int numFrames = 0;

@@ -2,7 +2,7 @@
 
 /*---------------------------------------------------------------------------*/
 
-void contextInit(const Params& params, Context& ctx) {
+void contextInitAndGetAPI(Params& params, Context& ctx) {
 
     EGLDisplay& display = ctx.display;
     EGLConfig& config = ctx.config;
@@ -47,6 +47,9 @@ void contextInit(const Params& params, Context& ctx) {
     if(eglInitialize(display, &major, &minor) == EGL_FALSE) {
         crash("%s", "eglInitialize failed.");
     }
+
+    params.APIVersion = ((int)major * 100) + ((int) minor * 10);
+    params.API = API_OPENGL_ES;
 
     EGLint num_config;
     if(eglChooseConfig(display, config_attribute_list, &config, 1, &num_config) == EGL_FALSE) {

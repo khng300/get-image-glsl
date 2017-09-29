@@ -7,10 +7,17 @@
 
 /*---------------------------------------------------------------------------*/
 
+typedef enum {
+    API_OPENGL,
+    API_OPENGL_ES,
+} API_TYPE;
+
 typedef struct {
     int width;
     int height;
-    int version;
+    int shaderVersion;
+    int APIVersion;
+    API_TYPE API;
     int delay;
     std::string fragFilename;
     std::string vertFilename;
