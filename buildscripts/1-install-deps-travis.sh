@@ -9,7 +9,7 @@ sudo chmod uga+rwx /data/bin
 GITHUB_RELEASE_TOOL_USER="paulthomson"
 GITHUB_RELEASE_TOOL_VERSION="v1.0.9.1"
 
-mkdir deps
+mkdir -p deps
 cd deps
 
 if [ "$(uname)" == "Darwin" ];
