@@ -12,7 +12,7 @@ curl -fsSL -o github-release.tar.gz https://github.com/paulthomson/github-releas
 7z x github-release.tar
 cd ..
 
-mkdir deps
+mkdir -p deps
 cd deps
 curl -fsSL -o angle.zip https://github.com/paulthomson/build-angle/releases/download/v-592879ad24e66c7c68c3a06d4e2227630520da36/MSVC2015-Release-x64.zip
 7z x angle.zip
