@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/graphicsfuzz/get-image-glsl.svg?branch=master)](https://travis-ci.org/graphicsfuzz/get-image-glsl)
+
 [![Build status](https://ci.appveyor.com/api/projects/status/4mbuu9dkx83xbwii/branch/master?svg=true)](https://ci.appveyor.com/project/hevrard/get-image-glsl/branch/master)
 
 # get-image-glsl
