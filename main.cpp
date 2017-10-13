@@ -561,20 +561,20 @@ void openglInit(const Params& params, const std::string& fragContents) {
     }
     GLuint vertPosLoc = (GLuint) vertPosLocInt;
 
+	const float vertices[] = {
+		-1.0f,  1.0f,
+		-1.0f, -1.0f,
+		1.0f, -1.0f,
+		1.0f,  1.0f
+	};
+
+	const GLubyte indices[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
     // Vertex buffer array handling changes with OpenGL version, see
     // https://stackoverflow.com/a/21652955
-
-    const float vertices[] = {
-        -1.0f,  1.0f,
-        -1.0f, -1.0f,
-         1.0f, -1.0f,
-         1.0f,  1.0f
-    };
-
-    const GLubyte indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
 
     GLuint vertexBuffer;
     GL_SAFECALL(glGenBuffers, 1, &vertexBuffer);
@@ -582,20 +582,22 @@ void openglInit(const Params& params, const std::string& fragContents) {
     GL_SAFECALL(glBufferData, GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     GLuint vertexArray;
-    GL_SAFECALL(glGenVertexArrays, 1, &vertexArray);
-    GL_SAFECALL(glBindVertexArray, vertexArray);
-    GL_SAFECALL(glVertexAttribPointer, vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    GL_SAFECALL(glEnableVertexAttribArray, vertPosLoc);
+	if (params.API == API_OPENGL) {
+		GL_SAFECALL(glGenVertexArrays, 1, &vertexArray);
+		GL_SAFECALL(glBindVertexArray, vertexArray);
+		GL_SAFECALL(glVertexAttribPointer, vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		GL_SAFECALL(glEnableVertexAttribArray, vertPosLoc);
+	}
 
     GLuint indicesBuffer;
     GL_SAFECALL(glGenBuffers, 1, &indicesBuffer);
     GL_SAFECALL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
     GL_SAFECALL(glBufferData, GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // GL_SAFECALL(glEnableVertexAttribArray, vertPosLoc);
-    // GL_SAFECALL(glBindBuffer, GL_ARRAY_BUFFER, vertexBuffer);
-    // GL_SAFECALL(glVertexAttribPointer, vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    // GL_SAFECALL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
+    GL_SAFECALL(glEnableVertexAttribArray, vertPosLoc);
+    GL_SAFECALL(glBindBuffer, GL_ARRAY_BUFFER, vertexBuffer);
+    GL_SAFECALL(glVertexAttribPointer, vertPosLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    GL_SAFECALL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
 
     GL_SAFECALL(glUseProgram, program);
     setUniformsJSON(program, params);
