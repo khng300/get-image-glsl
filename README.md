@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/graphicsfuzz/get-image-glsl.svg?branch=master)](https://travis-ci.org/graphicsfuzz/get-image-glsl)
+[
+[Build Status](https://travis-ci.org/graphicsfuzz/get-image-glsl.svg?branch=master)](https://travis-ci.org/graphicsfuzz/get-image-glsl)
 
 [![Build status](https://ci.appveyor.com/api/projects/status/4mbuu9dkx83xbwii/branch/master?svg=true)](https://ci.appveyor.com/project/hevrard/get-image-glsl/branch/master)
 
@@ -7,6 +8,13 @@
 This program renders a fragment shader, it can be compiled with
 different context provider, currently EGL or GLFW. See build
 instructions below.
+
+# Prerequisites
+
+The following are required for building and running the tool:
+* The OpenGL headers (in Ubuntu, provided by `mesa-common-dev`)
+* GLFW (in Ubuntu, provided by `libglfw-3-dev`)
+* CMake
 
 # Usage
 
