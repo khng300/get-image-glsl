@@ -567,9 +567,11 @@ void openglInit(const Params& params, const std::string& fragContents) {
     };
 
     GLuint vertexBuffer;
-    GLuint vertexArray;
-    GL_SAFECALL(glGenVertexArrays, 1, &vertexArray);
-    GL_SAFECALL(glBindVertexArray, vertexArray);
+    if (params.API == API_OPENGL_ES || params.APIVersion >= 300) {
+        GLuint vertexArray;
+        GL_SAFECALL(glGenVertexArrays, 1, &vertexArray);
+        GL_SAFECALL(glBindVertexArray, vertexArray);
+    }
     GL_SAFECALL(glGenBuffers, 1, &vertexBuffer);
     GL_SAFECALL(glBindBuffer, GL_ARRAY_BUFFER, vertexBuffer);
     GL_SAFECALL(glBufferData, GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
