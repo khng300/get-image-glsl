@@ -51,12 +51,13 @@ static void usage(char *name) {
 
     const char *options[] = {
         "--delay", "number of frames before PNG capture",
+        "--persist", "instruct the renderer to not quit after producing the image",
         "--exit-compile", "exit after compilation",
         "--exit-linking", "exit after linking",
         "--output file.png", "set PNG output file name",
         "--resolution <width> <height>", "set viewport resolution, in Pixels",
         "--vertex shader.vert", "use a specific vertex shader",
-	"--dump_bin <file>", "dump binary output to given file (requires OpenGL >= 4.1, OpenGLES >= 3.0)",
+    	"--dump_bin <file>", "dump binary output to given file (requires OpenGL >= 4.1, OpenGLES >= 3.0)",
     };
 
     for (unsigned i = 0; i < (sizeof(options) / sizeof(*options)); i++) {
