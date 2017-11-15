@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <ctime>
 
 #include "common.h"
 #include "openglcontext.h"
@@ -25,9 +26,12 @@ static void defaultParams(Params& params) {
     params.fragFilename = "";
     params.vertFilename = "";
     params.output = "output.png";
+    params.program = 0;
     params.exitCompile = false;
     params.exitLinking = false;
     params.persist = false;
+    params.animate = false;
+    params.timeVarName = "time";
     params.delay = 5;
     params.binOut = "";
 }
@@ -57,7 +61,7 @@ static void usage(char *name) {
         "--output file.png", "set PNG output file name",
         "--resolution <width> <height>", "set viewport resolution, in Pixels",
         "--vertex shader.vert", "use a specific vertex shader",
-    	"--dump_bin <file>", "dump binary output to given file (requires OpenGL >= 4.1, OpenGLES >= 3.0)",
+    	"--dump-bin <file>", "dump binary output to given file (requires OpenGL >= 4.1, OpenGLES >= 3.0)",
     };
 
     for (unsigned i = 0; i < (sizeof(options) / sizeof(*options)); i++) {
@@ -97,6 +101,8 @@ static void setParams(Params& params, int argc, char *argv[]) {
                 params.exitLinking = true;
             } else if (arg == "--persist") {
                 params.persist = true;
+            } else if (arg == "--animate") {
+                params.animate = true;
             } else if (arg == "--delay") {
                 if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--delay"); }
                 params.delay = atoi(argv[++i]);
@@ -110,9 +116,12 @@ static void setParams(Params& params, int argc, char *argv[]) {
             } else if (arg == "--vertex") {
                 if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--vertex"); }
                 params.vertFilename = argv[++i];
-            } else if (arg == "--dump_bin") {
-                if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--dump_bin"); }
+            } else if (arg == "--dump-bin") {
+                if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--dump-bin"); }
                 params.binOut = argv[++i];
+            } else if (arg == "--timevar-name") {
+                if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--timevar-name"); }
+                params.timeVarName = argv[++i];
             } else {
                 usage(argv[0]);
                 crash("Invalid option: %s", argv[i]);
@@ -417,6 +426,19 @@ void setUniformsJSON(const GLuint& program, const Params& params) {
 }
 
 /*---------------------------------------------------------------------------*/
+
+void setUniformTime(const Params& params) {
+    GLint uniformLocation = glGetUniformLocation(params.program, params.timeVarName.c_str());
+    GL_CHECKERR("glGetUniformLocation");
+    if (uniformLocation == -1) {
+        crash("Cannot find uniform named: %s", params.timeVarName.c_str());
+    }
+    GLfloat timeVal = (GLfloat) (std::clock() / (float) CLOCKS_PER_SEC * 50.0);
+    GL_SAFECALL(glUniform1f, uniformLocation, timeVal);
+}
+
+
+/*---------------------------------------------------------------------------*/
 // OpenGL
 /*---------------------------------------------------------------------------*/
 
@@ -446,9 +468,9 @@ void dumpBin(const Params& params, GLuint program) {
         return;
     }
 
-    GLint num_formats;
-    GL_SAFECALL(glGetIntegerv, GL_NUM_PROGRAM_BINARY_FORMATS, &num_formats);
-    if (num_formats <= 0) {
+    GLint numFormats;
+    GL_SAFECALL(glGetIntegerv, GL_NUM_PROGRAM_BINARY_FORMATS, &numFormats);
+    if (numFormats <= 0) {
         printf("Cannot dump binary: driver supports zero binary format\n");
         return;
     }
@@ -496,7 +518,7 @@ void printProgramError(GLuint program) {
 
 /*---------------------------------------------------------------------------*/
 
-void openglInit(const Params& params, const std::string& fragContents) {
+void openglInit(Params& params, const std::string& fragContents) {
     const char *temp;
     GLint status = 0;
 
@@ -583,11 +605,15 @@ void openglInit(const Params& params, const std::string& fragContents) {
     setUniformsJSON(program, params);
 
     GL_SAFECALL(glViewport, 0, 0, params.width, params.height);
+    params.program = program;
 }
 
 /*---------------------------------------------------------------------------*/
 
 void openglRender(const Params& params) {
+    if (params.animate) {
+        setUniformTime(params);
+    }
     GL_SAFECALL(glClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
     GL_SAFECALL(glClear, GL_COLOR_BUFFER_BIT);
 //    GL_SAFECALL(glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);

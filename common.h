@@ -4,7 +4,6 @@
 #include <stdlib.h> // exit()
 #include <stdio.h>  // printf()
 #include <string>
-
 /*---------------------------------------------------------------------------*/
 
 typedef enum {
@@ -19,12 +18,15 @@ typedef struct {
     int APIVersion;
     API_TYPE API;
     int delay;
+    uint32_t program; // Is GLuint, but missing OpenGL headers here
     std::string fragFilename;
     std::string vertFilename;
     std::string output;
     bool exitCompile;
     bool exitLinking;
     bool persist;
+    bool animate;
+    std::string timeVarName;
     std::string binOut;
 } Params;
 
