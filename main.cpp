@@ -661,7 +661,6 @@ int main(int argc, char* argv[])
     readFile(fragContents, params.fragFilename);
     params.shaderVersion = getShaderVersion(fragContents);
     contextInitAndGetAPI(params, context);
-    printf("API version: %d\n", params.APIVersion);
     openglInit(params, fragContents);
 
     int numFrames = 0;
