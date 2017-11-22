@@ -554,10 +554,12 @@ void openglInit(Params& params, const std::string& fragContents) {
     temp = vertContents.c_str();
     GL_SAFECALL(glShaderSource, vertexShader, 1, &temp, NULL);
     if (params.profile) {
+        GL_SAFECALL(glFinish);
         startTimer(&timer);
     }
     GL_SAFECALL(glCompileShader, vertexShader);
     if (params.profile) {
+        GL_SAFECALL(glFinish);
         durationUsec = stopTimer(&timer);
         printf("vertex shader compile time (us): %ld\n", durationUsec);
     }
@@ -572,10 +574,12 @@ void openglInit(Params& params, const std::string& fragContents) {
     temp = fragContents.c_str();
     GL_SAFECALL(glShaderSource, fragmentShader, 1, &temp, NULL);
     if (params.profile) {
+        GL_SAFECALL(glFinish);
         startTimer(&timer);
     }
     GL_SAFECALL(glCompileShader, fragmentShader);
     if (params.profile) {
+        GL_SAFECALL(glFinish);
         durationUsec = stopTimer(&timer);
         printf("fragment shader compile time (us): %ld\n", durationUsec);
     }
@@ -601,7 +605,16 @@ void openglInit(Params& params, const std::string& fragContents) {
     }
     GL_SAFECALL(glAttachShader, program, vertexShader);
     GL_SAFECALL(glAttachShader, program, fragmentShader);
+    if (params.profile) {
+        GL_SAFECALL(glFinish);
+        startTimer(&timer);
+    }
     GL_SAFECALL(glLinkProgram, program);
+    if (params.profile) {
+        GL_SAFECALL(glFinish);
+        durationUsec = stopTimer(&timer);
+        printf("link time (us): %ld\n", durationUsec);
+    }
     GL_SAFECALL(glGetProgramiv, program, GL_LINK_STATUS, &status);
     if (!status) {
         printProgramError(program);
@@ -650,14 +663,26 @@ void openglInit(Params& params, const std::string& fragContents) {
 /*---------------------------------------------------------------------------*/
 
 void openglRender(const Params& params) {
+    struct timeval timer;
+    long durationUsec = 0;
+
     if (params.animate) {
         setUniformTime(params);
     }
     GL_SAFECALL(glClearColor, 0.0f, 0.0f, 0.0f, 1.0f);
     GL_SAFECALL(glClear, GL_COLOR_BUFFER_BIT);
 //    GL_SAFECALL(glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+    if (params.profile) {
+        GL_SAFECALL(glFinish);
+        startTimer(&timer);
+    }
     GL_SAFECALL(glDrawArrays, GL_TRIANGLES, 0, 3);
     GL_SAFECALL(glDrawArrays, GL_TRIANGLES, 3, 3);
+    if (params.profile) {
+        GL_SAFECALL(glFinish);
+        durationUsec = stopTimer(&timer);
+        printf("render time (us): %ld\n", durationUsec);
+    }
     GL_SAFECALL(glFlush);
 }
 
