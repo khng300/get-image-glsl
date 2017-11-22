@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <ctime>
+#include <sys/time.h>
 
 #include "common.h"
 #include "openglcontext.h"
@@ -31,6 +32,7 @@ static void defaultParams(Params& params) {
     params.exitLinking = false;
     params.persist = false;
     params.animate = false;
+    params.profile = false;
     params.timeVarName = "time";
     params.delay = 5;
     params.binOut = "";
@@ -62,6 +64,7 @@ static void usage(char *name) {
         "--resolution <width> <height>", "set viewport resolution, in Pixels",
         "--vertex shader.vert", "use a specific vertex shader",
     	"--dump-bin <file>", "dump binary output to given file (requires OpenGL >= 4.1, OpenGLES >= 3.0)",
+        "--profile", "report time needed to compile, link and render",
     };
 
     for (unsigned i = 0; i < (sizeof(options) / sizeof(*options)); i++) {
@@ -103,6 +106,8 @@ static void setParams(Params& params, int argc, char *argv[]) {
                 params.persist = true;
             } else if (arg == "--animate") {
                 params.animate = true;
+            } else if (arg == "--profile") {
+                params.profile = true;
             } else if (arg == "--delay") {
                 if ((i + 1) >= argc) { usage(argv[0]); crash("Missing value for option %s", "--delay"); }
                 params.delay = atoi(argv[++i]);
@@ -241,6 +246,24 @@ void generateVertexShader(std::string& out, const Params& params) {
     out = ss.str();
 
     //std::cerr << "Generated vertex shader:\n" << out << std::endl;
+}
+
+/*---------------------------------------------------------------------------*/
+// Timer
+/*---------------------------------------------------------------------------*/
+
+void startTimer(struct timeval *tv) {
+    gettimeofday(tv, 0);
+}
+
+/*---------------------------------------------------------------------------*/
+
+long stopTimer(struct timeval *start) {
+    struct timeval end;
+    gettimeofday(&end, 0);
+    time_t elapsed_sec = end.tv_sec - start->tv_sec;
+    time_t elapsed_usec = end.tv_usec - start->tv_usec;
+    return (long) ((elapsed_sec * 1000000) + elapsed_usec);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -520,22 +543,9 @@ void printProgramError(GLuint program) {
 
 void openglInit(Params& params, const std::string& fragContents) {
     const char *temp;
+    struct timeval timer;
+    long durationUsec = 0;
     GLint status = 0;
-
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    GL_CHECKERR("glCreateShader");
-    temp = fragContents.c_str();
-    GL_SAFECALL(glShaderSource, fragmentShader, 1, &temp, NULL);
-    GL_SAFECALL(glCompileShader, fragmentShader);
-
-    GL_SAFECALL(glGetShaderiv, fragmentShader, GL_COMPILE_STATUS, &status);
-    if (!status) {
-        printShaderError(fragmentShader);
-        errcode_crash(COMPILE_ERROR_EXIT_CODE, "Fragment shader compilation failed (%s)", params.fragFilename.c_str());
-    }
-    if (params.exitCompile) {
-        exit(EXIT_SUCCESS);
-    }
 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     GL_CHECKERR("glCreateShader");
@@ -543,11 +553,40 @@ void openglInit(Params& params, const std::string& fragContents) {
     generateVertexShader(vertContents, params);
     temp = vertContents.c_str();
     GL_SAFECALL(glShaderSource, vertexShader, 1, &temp, NULL);
+    if (params.profile) {
+        startTimer(&timer);
+    }
     GL_SAFECALL(glCompileShader, vertexShader);
+    if (params.profile) {
+        durationUsec = stopTimer(&timer);
+        printf("vertex shader compile time (us): %ld\n", durationUsec);
+    }
     GL_SAFECALL(glGetShaderiv, vertexShader, GL_COMPILE_STATUS, &status);
     if (!status) {
         printShaderError(vertexShader);
         errcode_crash(COMPILE_ERROR_EXIT_CODE, "Vertex shader compilation failed (%s)", params.fragFilename.c_str());
+    }
+
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    GL_CHECKERR("glCreateShader");
+    temp = fragContents.c_str();
+    GL_SAFECALL(glShaderSource, fragmentShader, 1, &temp, NULL);
+    if (params.profile) {
+        startTimer(&timer);
+    }
+    GL_SAFECALL(glCompileShader, fragmentShader);
+    if (params.profile) {
+        durationUsec = stopTimer(&timer);
+        printf("fragment shader compile time (us): %ld\n", durationUsec);
+    }
+    GL_SAFECALL(glGetShaderiv, fragmentShader, GL_COMPILE_STATUS, &status);
+    if (!status) {
+        printShaderError(fragmentShader);
+        errcode_crash(COMPILE_ERROR_EXIT_CODE, "Fragment shader compilation failed (%s)", params.fragFilename.c_str());
+    }
+
+    if (params.exitCompile) {
+        exit(EXIT_SUCCESS);
     }
 
     GLuint program = glCreateProgram();

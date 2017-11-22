@@ -26,6 +26,7 @@ typedef struct {
     bool exitLinking;
     bool persist;
     bool animate;
+    bool profile;
     std::string timeVarName;
     std::string binOut;
 } Params;
