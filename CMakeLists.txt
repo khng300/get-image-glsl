@@ -66,6 +66,8 @@ if(BUILD_GLFW_VERSION)
             lodepng.h
             main.cpp
             openglcontext.h
+            timer.h
+            timer.cpp
     )
 
     target_link_libraries(get_image_glfw glfw)
@@ -104,6 +106,8 @@ if(BUILD_EGL_VERSION)
             lodepng.h
             main.cpp
             openglcontext.h
+            timer.h
+            timer.cpp
         )
 
     target_compile_definitions(get_image_egl PUBLIC -DGETIMAGE_CONTEXT=CONTEXT_EGL)

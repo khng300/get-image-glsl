@@ -3,8 +3,8 @@
 #include <sstream>
 #include <vector>
 #include <ctime>
-#include <sys/time.h>
 
+#include "timer.h"
 #include "common.h"
 #include "openglcontext.h"
 #include "lodepng.h"
@@ -246,24 +246,6 @@ void generateVertexShader(std::string& out, const Params& params) {
     out = ss.str();
 
     //std::cerr << "Generated vertex shader:\n" << out << std::endl;
-}
-
-/*---------------------------------------------------------------------------*/
-// Timer
-/*---------------------------------------------------------------------------*/
-
-void startTimer(struct timeval *tv) {
-    gettimeofday(tv, 0);
-}
-
-/*---------------------------------------------------------------------------*/
-
-long stopTimer(struct timeval *start) {
-    struct timeval end;
-    gettimeofday(&end, 0);
-    time_t elapsed_sec = end.tv_sec - start->tv_sec;
-    time_t elapsed_usec = end.tv_usec - start->tv_usec;
-    return (long) ((elapsed_sec * 1000000) + elapsed_usec);
 }
 
 /*---------------------------------------------------------------------------*/

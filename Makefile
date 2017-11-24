@@ -10,14 +10,14 @@ GLFW_LDFLAGS=-L $(HOME)/work/glfw-3.2.1/build/src -lglfw -ldl
 all: get_image_egl get_image_glfw
 
 # EGL
-get_image_egl: main.cpp lodepng.o context_egl.o json.hpp
+get_image_egl: main.cpp lodepng.o context_egl.o json.hpp timer.o
 	$(CXX) $(CFLAGS) -DGETIMAGE_CONTEXT=CONTEXT_EGL -o $@ $(EGL_INCLUDE) $+ $(EGL_LDFLAGS)
 
 context_egl.o: context_egl.cpp
 	$(CXX) $(CFLAGS) -c $(EGL_INCLUDE) $?
 
 # GLFW
-get_image_glfw: main.cpp lodepng.o context_glfw.o glad.o json.hpp
+get_image_glfw: main.cpp lodepng.o context_glfw.o glad.o json.hpp timer.o
 	$(CXX) $(CFLAGS) -DGETIMAGE_CONTEXT=CONTEXT_GLFW -o $@ $(GLFW_INCLUDE) $+ $(GLFW_LDFLAGS)
 
 context_glfw.o: context_glfw.cpp
@@ -28,6 +28,10 @@ glad.o: glad.c
 
 # PNG library
 lodepng.o: lodepng.cpp
+	$(CXX) $(CFLAGS) -c $(INCLUDE) $?
+
+# Timer
+timer.o: timer.cpp
 	$(CXX) $(CFLAGS) -c $(INCLUDE) $?
 
 PHONY: clean
