@@ -13,19 +13,20 @@ void contextInitAndGetAPI(Params& params, Context& ctx) {
         {
             //EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
             EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
-            EGL_RED_SIZE, 4,
-            EGL_GREEN_SIZE, 4,
-            EGL_BLUE_SIZE, 4,
-            EGL_ALPHA_SIZE, 4,
+            EGL_RED_SIZE, 8,
+            EGL_GREEN_SIZE, 8,
+            EGL_BLUE_SIZE, 8,
+            EGL_ALPHA_SIZE, 8,
+            EGL_STENCIL_SIZE, 8,
 
-            EGL_CONFORMANT, EGL_OPENGL_ES3_BIT,
+//            EGL_CONFORMANT, EGL_OPENGL_ES2_BIT,
             EGL_DEPTH_SIZE, 16,
             EGL_NONE
         };
 
     const EGLint context_attrib_list[] =
         {
-            EGL_CONTEXT_CLIENT_VERSION, 3,
+            EGL_CONTEXT_CLIENT_VERSION, 2,
             EGL_NONE
         };
 
@@ -39,7 +40,16 @@ void contextInitAndGetAPI(Params& params, Context& ctx) {
             EGL_NONE
         };
 
-    display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    const EGLint displayAttributes[] =
+        {
+            EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE,
+//            EGL_PLATFORM_ANGLE_MAX_VERSION_MAJOR_ANGLE, 9,
+//            EGL_PLATFORM_ANGLE_MAX_VERSION_MINOR_ANGLE, 3,
+            EGL_NONE,
+        };
+
+    display = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, &displayAttributes[0]);
+    // display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 
     EGLint major;
     EGLint minor;

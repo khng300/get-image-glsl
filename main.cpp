@@ -624,7 +624,7 @@ void openglInit(Params& params, const std::string& fragContents) {
     };
 
     GLuint vertexBuffer;
-    if (params.API == API_OPENGL_ES || params.APIVersion >= 300) {
+    if (params.API == API_OPENGL_ES && params.APIVersion >= 300) {
         GLuint vertexArray;
         GL_SAFECALL(glGenVertexArrays, 1, &vertexArray);
         GL_SAFECALL(glBindVertexArray, vertexArray);
