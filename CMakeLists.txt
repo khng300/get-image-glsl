@@ -70,7 +70,11 @@ if(BUILD_GLFW_VERSION)
             timer.cpp
     )
 
-    target_link_libraries(get_image_glfw glfw)
+    if(CMAKE_COMPILER_IS_GNUCXX)
+        target_link_libraries(get_image_glfw PRIVATE -static-libgcc -static-libstdc++)
+    endif()
+
+    target_link_libraries(get_image_glfw PUBLIC glfw)
     target_compile_definitions(get_image_glfw PUBLIC -DGETIMAGE_CONTEXT=CONTEXT_GLFW)
     target_include_directories(get_image_glfw PUBLIC include)
 
@@ -110,9 +114,13 @@ if(BUILD_EGL_VERSION)
             timer.cpp
         )
 
+    if(CMAKE_COMPILER_IS_GNUCXX)
+        target_link_libraries(get_image_egl PRIVATE -static-libgcc -static-libstdc++)
+    endif()
+
     target_compile_definitions(get_image_egl PUBLIC -DGETIMAGE_CONTEXT=CONTEXT_EGL)
     target_include_directories(get_image_egl PUBLIC include)
-    target_link_libraries(get_image_egl ${LIB_EGL} ${LIB_GLES})
+    target_link_libraries(get_image_egl PUBLIC ${LIB_EGL} ${LIB_GLES})
 
     install(TARGETS get_image_egl
             DESTINATION bin
