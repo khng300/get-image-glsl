@@ -25,13 +25,13 @@ then
   wget https://github.com/paulthomson/build-angle/releases/download/v-592879ad24e66c7c68c3a06d4e2227630520da36/Linux-x64-Release.zip
   unzip Linux-x64-Release.zip
 
-  sudo apt-get -y install libxrandr-dev libxinerama-dev libxcursor-dev libgl1-mesa-dev cmake zip git
-
   # The JSON library requires GCC >= 4.9
   sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y;
   sudo apt-get update -qq
   sudo apt-get install -qq -y g++-4.9
   sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
+
+  sudo apt-get -y install libxrandr-dev libxinerama-dev libxcursor-dev libgl1-mesa-dev cmake zip git
 
 fi
 

@@ -14,7 +14,7 @@ zip -r ../"${INSTALL_DIR}.zip" *
 cd ..
 
 github-release \
-  graphicsfuzz/get-image-glsl \
+  mc-imperial/get-image-glsl \
   "v-${COMMIT_ID}" \
   "${COMMIT_ID}" \
   "$(echo -e "Automated build.\n$(git log --graph -n 3 --abbrev-commit --pretty='format:%h - %s <%an>')")" \
