@@ -66,9 +66,7 @@ if(BUILD_GLFW_VERSION)
             lodepng.h
             main.cpp
             openglcontext.h
-            timer.h
-            timer.cpp
-    )
+            )
 
     if(CMAKE_COMPILER_IS_GNUCXX)
         target_link_libraries(get_image_glfw PRIVATE -static-libgcc -static-libstdc++)
@@ -110,9 +108,7 @@ if(BUILD_EGL_VERSION)
             lodepng.h
             main.cpp
             openglcontext.h
-            timer.h
-            timer.cpp
-        )
+            )
 
     if(CMAKE_COMPILER_IS_GNUCXX)
         target_link_libraries(get_image_egl PRIVATE -static-libgcc -static-libstdc++)
