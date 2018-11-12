@@ -6,11 +6,11 @@ set -u
 sudo mkdir -p /data/bin
 sudo chmod uga+rwx /data/bin
 
-GITHUB_RELEASE_TOOL_USER="paulthomson"
-GITHUB_RELEASE_TOOL_VERSION="v1.0.9.1"
+GITHUB_RELEASE_TOOL_USER="c4milo"
+GITHUB_RELEASE_TOOL_VERSION="v1.1.0"
 
 mkdir -p deps
-cd deps
+pushd deps
 
 if [ "$(uname)" == "Darwin" ];
 then
@@ -36,7 +36,7 @@ then
 
 fi
 
-cd ..
+popd
 
 pushd /data/bin
 wget "https://github.com/${GITHUB_RELEASE_TOOL_USER}/github-release/releases/download/${GITHUB_RELEASE_TOOL_VERSION}/github-release_${GITHUB_RELEASE_TOOL_VERSION}_${GITHUB_RELEASE_TOOL_ARCH}.tar.gz"
