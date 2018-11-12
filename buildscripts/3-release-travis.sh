@@ -15,7 +15,7 @@ cd ..
 
 sha1sum "${INSTALL_DIR}.zip" >"${INSTALL_DIR}.zip.sha1"
 
-sed -e "s/@GROUP@/${GROUP_DOTS}/g" -e "s/@ARTIFACT@/${ARTIFACT}/g" -e "s/@VERSION@/${VERSION}/g" "../fake_pom.xml" >"${POM_FILE}"
+sed -e "s/@GROUP@/${GROUP_DOTS}/g" -e "s/@ARTIFACT@/${ARTIFACT}/g" -e "s/@VERSION@/${VERSION}/g" "fake_pom.xml" >"${POM_FILE}"
 sha1sum "${POM_FILE}" >"${POM_FILE}.sha1"
 
 DESCRIPTION="$(echo -e "Automated build.\n$(git log --graph -n 3 --abbrev-commit --pretty='format:%h - %s <%an>')")"
