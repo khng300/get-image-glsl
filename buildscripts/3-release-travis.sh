@@ -9,6 +9,10 @@ for f in "${INSTALL_DIR}/bin/"*; do
   echo "${COMMIT_ID}">"${f}.version"
 done
 
+cd "${INSTALL_DIR}"
+zip -r "../${INSTALL_DIR}.zip" *
+cd ..
+
 sha1sum "${INSTALL_DIR}.zip" >"${INSTALL_DIR}.zip.sha1"
 
 sed -e "s/@GROUP@/${GROUP_DOTS}/g" -e "s/@ARTIFACT@/${ARTIFACT}/g" -e "s/@VERSION@/${VERSION}/g" "../fake_pom.xml" >"${POM_FILE}"
