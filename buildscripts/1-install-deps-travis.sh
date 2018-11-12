@@ -14,6 +14,7 @@ pushd deps
 
 if [ "$(uname)" == "Darwin" ];
 then
+  brew install ninja md5sha1sum
   GITHUB_RELEASE_TOOL_ARCH="darwin_amd64"
   wget https://github.com/paulthomson/build-angle/releases/download/v-592879ad24e66c7c68c3a06d4e2227630520da36/Darwin-x64-Release.zip
   unzip Darwin-x64-Release.zip
@@ -32,7 +33,7 @@ then
   sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
   sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 90
 
-  sudo apt-get -y install libxrandr-dev libxinerama-dev libxcursor-dev libgl1-mesa-dev cmake zip git
+  sudo apt-get -y install libxrandr-dev libxinerama-dev libxcursor-dev libgl1-mesa-dev cmake zip git ninja-build
 
 fi
 
