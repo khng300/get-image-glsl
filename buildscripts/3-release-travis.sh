@@ -6,6 +6,7 @@ set -u
 cd "${CLONE_DIR}"
 
 for f in "${INSTALL_DIR}/bin/"*; do
+  # Commit ID of this repo.
   echo "${COMMIT_ID}">"${f}.version"
 done
 
@@ -15,6 +16,7 @@ cd ..
 
 sha1sum "${INSTALL_DIR}.zip" >"${INSTALL_DIR}.zip.sha1"
 
+# Different path to fake pom.
 sed -e "s/@GROUP@/${GROUP_DOTS}/g" -e "s/@ARTIFACT@/${ARTIFACT}/g" -e "s/@VERSION@/${VERSION}/g" "fake_pom.xml" >"${POM_FILE}"
 sha1sum "${POM_FILE}" >"${POM_FILE}.sha1"
 
