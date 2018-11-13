@@ -13,7 +13,6 @@ configuration:
 
 platform:
   - x64
-#  - x86
 
 environment:
   matrix:
@@ -22,13 +21,28 @@ environment:
      CMAKE_OPTIONS: " "
 
 install:
-  - bash buildscripts\1-install-deps-appveyor.sh
+  - set "CLONE_DIR=."
+  - set "PATH=%APPVEYOR_BUILD_FOLDER%\temp;%PATH%"
+  - '"C:\Program Files\Git\bin\sh.exe" --login buildscripts\1-install-deps-appveyor.sh'
   - refreshenv
-  - set PATH=%APPVEYOR_BUILD_FOLDER%\temp;%PATH%
+  - set "CLONE_DIR=."
+  - set "PATH=%APPVEYOR_BUILD_FOLDER%\temp;%PATH%"
+  - set "GITHUB_USER=mc-imperial"
+  - set "GITHUB_REPO=get-image-glsl"
+  - set "COMMIT_ID=%APPVEYOR_REPO_COMMIT%"
+  - set "GROUP_DOTS=github.%GITHUB_USER%"
+  - set "GROUP_SLASHES=github/%GITHUB_USER%"
+  - set "ARTIFACT=%GITHUB_REPO%"
+  - set "VERSION=%COMMIT_ID%"
+  - set "POM_FILE=%GITHUB_REPO%-%VERSION%.pom"
+  - set "TAG=%GROUP_SLASHES%/%ARTIFACT%/%VERSION%"
+  - set "CMAKE_BUILD_TYPE=%Configuration%"
+  - set "CLASSIFIER=Windows_x64_%CMAKE_BUILD_TYPE%"
+  - set "INSTALL_DIR=%ARTIFACT%-%VERSION%-%CLASSIFIER%"
 
 build_script:
-  - bash buildscripts\2-build-appveyor.sh
+  - '"C:\Program Files\Git\bin\sh.exe" --login buildscripts\2-build-appveyor.sh'
 
 on_success:
-  - bash buildscripts\3-release-appveyor.sh
+  - '"C:\Program Files\Git\bin\sh.exe" --login buildscripts\3-release-appveyor.sh'
 
