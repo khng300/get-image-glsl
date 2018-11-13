@@ -3,13 +3,14 @@
 #include <sstream>
 #include <vector>
 #include <ctime>
+#include <chrono>
 
-#include "timer.h"
 #include "common.h"
 #include "openglcontext.h"
 #include "lodepng.h"
 #include "json.hpp"
 using json = nlohmann::json;
+using namespace std::chrono;
 
 // These codes mimic the ones used in 'get-image-glfw'
 #define COMPILE_ERROR_EXIT_CODE (101)
@@ -525,8 +526,7 @@ void printProgramError(GLuint program) {
 
 void openglInit(Params& params, const std::string& fragContents) {
     const char *temp;
-    struct timeval timer;
-    long durationUsec = 0;
+    steady_clock::time_point timeStart;
     GLint status = 0;
 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -537,13 +537,12 @@ void openglInit(Params& params, const std::string& fragContents) {
     GL_SAFECALL(glShaderSource, vertexShader, 1, &temp, NULL);
     if (params.profile) {
         GL_SAFECALL(glFinish);
-        startTimer(&timer);
+        timeStart = steady_clock::now();
     }
     GL_SAFECALL(glCompileShader, vertexShader);
     if (params.profile) {
         GL_SAFECALL(glFinish);
-        durationUsec = stopTimer(&timer);
-        printf("vertex shader compile time (us): %ld\n", durationUsec);
+        printf("vertex shader compile time (us): %ld\n", duration_cast<microseconds>(steady_clock::now() - timeStart).count());
     }
     GL_SAFECALL(glGetShaderiv, vertexShader, GL_COMPILE_STATUS, &status);
     if (!status) {
@@ -557,13 +556,12 @@ void openglInit(Params& params, const std::string& fragContents) {
     GL_SAFECALL(glShaderSource, fragmentShader, 1, &temp, NULL);
     if (params.profile) {
         GL_SAFECALL(glFinish);
-        startTimer(&timer);
+        timeStart = steady_clock::now();
     }
     GL_SAFECALL(glCompileShader, fragmentShader);
     if (params.profile) {
         GL_SAFECALL(glFinish);
-        durationUsec = stopTimer(&timer);
-        printf("fragment shader compile time (us): %ld\n", durationUsec);
+        printf("fragment shader compile time (us): %ld\n", duration_cast<microseconds>(steady_clock::now() - timeStart).count());
     }
     GL_SAFECALL(glGetShaderiv, fragmentShader, GL_COMPILE_STATUS, &status);
     if (!status) {
@@ -589,13 +587,12 @@ void openglInit(Params& params, const std::string& fragContents) {
     GL_SAFECALL(glAttachShader, program, fragmentShader);
     if (params.profile) {
         GL_SAFECALL(glFinish);
-        startTimer(&timer);
+        timeStart = steady_clock::now();
     }
     GL_SAFECALL(glLinkProgram, program);
     if (params.profile) {
         GL_SAFECALL(glFinish);
-        durationUsec = stopTimer(&timer);
-        printf("link time (us): %ld\n", durationUsec);
+        printf("link time (us): %ld\n", duration_cast<microseconds>(steady_clock::now() - timeStart).count());
     }
     GL_SAFECALL(glGetProgramiv, program, GL_LINK_STATUS, &status);
     if (!status) {
@@ -645,9 +642,7 @@ void openglInit(Params& params, const std::string& fragContents) {
 /*---------------------------------------------------------------------------*/
 
 void openglRender(const Params& params) {
-    struct timeval timer;
-    long durationUsec = 0;
-
+    steady_clock::time_point timeStart;
     if (params.animate) {
         setUniformTime(params);
     }
@@ -656,14 +651,13 @@ void openglRender(const Params& params) {
 //    GL_SAFECALL(glDrawElements, GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
     if (params.profile) {
         GL_SAFECALL(glFinish);
-        startTimer(&timer);
+        timeStart = steady_clock::now();
     }
     GL_SAFECALL(glDrawArrays, GL_TRIANGLES, 0, 3);
     GL_SAFECALL(glDrawArrays, GL_TRIANGLES, 3, 3);
     if (params.profile) {
         GL_SAFECALL(glFinish);
-        durationUsec = stopTimer(&timer);
-        printf("render time (us): %ld\n", durationUsec);
+        printf("render time (us): %ld\n", duration_cast<microseconds>(steady_clock::now() - timeStart).count());
     }
     GL_SAFECALL(glFlush);
 }
