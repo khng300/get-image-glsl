@@ -23,7 +23,7 @@ endif()
 # in the same directory as the executable.
 # On Windows, this is already the default behaviour.
 if(APPLE)
-    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH}:@executable_path/../lib:@executable_path/" )
+    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH}:@executable_path/../lib:@executable_path/." )
 else(UNIX)
     SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH}:$ORIGIN/../lib:$ORIGIN/" )
 endif()
