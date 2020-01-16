@@ -2,6 +2,7 @@
 #define __GETIMAGE_EGL__
 
 #include <EGL/egl.h>
+#include <EGL/eglext.h>
 #define GL_GLEXT_PROTOTYPES
 #include <GLES/gl.h>
 #include <GLES3/gl3.h>

@@ -1,6 +1,37 @@
 #include "context_egl.h"
+#include <iostream>
 
 /*---------------------------------------------------------------------------*/
+
+static EGLDisplay displayForDevice(EGLDeviceEXT device)
+{
+    PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayExt = reinterpret_cast<PFNEGLGETPLATFORMDISPLAYEXTPROC>(eglGetProcAddress("eglGetPlatformDisplayEXT"));
+    EGLint attribs[] = { EGL_NONE };
+    EGLDisplay display = eglGetPlatformDisplayExt(EGL_PLATFORM_DEVICE_EXT, device, attribs);
+    return display;
+}
+
+static EGLDisplay getDevice()
+{
+    PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT = reinterpret_cast<PFNEGLQUERYDEVICESEXTPROC>(eglGetProcAddress("eglQueryDevicesEXT"));
+    EGLDeviceEXT devices[32];
+    EGLint num_devices;
+    if (!eglQueryDevicesEXT(32, devices, &num_devices)) {
+	    std::cout << "Failed to query devices." << std::endl << std::endl;
+        return EGL_NO_DISPLAY;
+    }
+    if (num_devices == 0) {
+	    std::cout << "Found no devices." << std::endl << std::endl;
+        return EGL_NO_DISPLAY;
+    }
+
+    EGLDisplay display = displayForDevice(devices[0]);
+    if (display == EGL_NO_DISPLAY) {
+	    std::cout << "  No attached display." << std::endl;
+    }
+
+    return display;
+}
 
 void contextInitAndGetAPI(Params& params, Context& ctx) {
 
@@ -39,7 +70,7 @@ void contextInitAndGetAPI(Params& params, Context& ctx) {
             EGL_NONE
         };
 
-    display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    display = getDevice();
 
     EGLint major;
     EGLint minor;
